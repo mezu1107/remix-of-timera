@@ -32,6 +32,41 @@ function AdminOverview() {
     },
   });
 
+  const analytics = useQuery({
+    queryKey: ["admin", "analytics", "overview"],
+    queryFn: async () => {
+      const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const liveSince = Date.now() - 5 * 60 * 1000;
+      const { data, error } = await (supabase.from("analytics_events" as any) as any)
+        .select("event_name,session_id,page_path,product_slug,product_name,created_at")
+        .gte("created_at", since24h)
+        .order("created_at", { ascending: false })
+        .limit(1000);
+      if (error) throw error;
+      const rows = (data ?? []) as Record<string, any>[];
+      const count = (name: string) => rows.filter((r) => r.event_name === name).length;
+      const liveVisitors = new Set(
+        rows.filter((r) => r.session_id && new Date(r.created_at).getTime() >= liveSince).map((r) => String(r.session_id)),
+      ).size;
+      const topProducts = Object.values(
+        rows.filter((r) => r.event_name === "view_item" && r.product_name).reduce<Record<string, { name: string; slug: string; views: number }>>((acc, r) => {
+          const slug = String(r.product_slug ?? r.product_name);
+          acc[slug] = acc[slug] ?? { name: String(r.product_name), slug, views: 0 };
+          acc[slug].views += 1;
+          return acc;
+        }, {}),
+      ).sort((a, b) => b.views - a.views).slice(0, 5);
+      const topPages = Object.entries(
+        rows.filter((r) => r.event_name === "page_view" && r.page_path).reduce<Record<string, number>>((acc, r) => {
+          const path = String(r.page_path);
+          acc[path] = (acc[path] ?? 0) + 1;
+          return acc;
+        }, {}),
+      ).map(([path, views]) => ({ path, views })).sort((a, b) => b.views - a.views).slice(0, 5);
+      return { liveVisitors, pageViews: count("page_view"), productViews: count("view_item"), checkouts: count("begin_checkout"), purchases: count("purchase"), topProducts, topPages };
+    },
+  });
+
   const cards = [
     { label: "Products", value: products.data ?? 0, to: "/admin/products" },
     { label: "Hero Slides", value: slides.data ?? 0, to: "/admin/hero" },
@@ -39,6 +74,10 @@ function AdminOverview() {
     { label: "Journal Posts", value: posts.data ?? 0, to: "/admin/blog" },
     { label: "Orders", value: orders.data ?? 0, to: "/admin/orders" },
     { label: "Revenue", value: formatPrice(revenue.data ?? 0), to: "/admin/orders" },
+    { label: "Live Visitors", value: analytics.data?.liveVisitors ?? 0, to: "/admin" },
+    { label: "Page Views 24h", value: analytics.data?.pageViews ?? 0, to: "/admin" },
+    { label: "Checkouts 24h", value: analytics.data?.checkouts ?? 0, to: "/admin/orders" },
+    { label: "Purchases 24h", value: analytics.data?.purchases ?? 0, to: "/admin/orders" },
   ];
 
   return (
@@ -55,6 +94,41 @@ function AdminOverview() {
           </Link>
         ))}
       </div>
+      <div className="mt-8 grid gap-4 lg:grid-cols-2">
+        <Panel title="Top products viewed today">
+          {(analytics.data?.topProducts.length ?? 0) === 0 ? (
+            <p className="text-sm text-muted-foreground">No product views tracked yet.</p>
+          ) : (
+            analytics.data?.topProducts.map((p) => (
+              <div key={p.slug} className="flex items-center justify-between gap-3 border-b border-border/50 py-2 text-sm last:border-0">
+                <span className="min-w-0 truncate">{p.name}</span>
+                <span className="shrink-0 text-muted-foreground">{p.views} views</span>
+              </div>
+            ))
+          )}
+        </Panel>
+        <Panel title="Top pages today">
+          {(analytics.data?.topPages.length ?? 0) === 0 ? (
+            <p className="text-sm text-muted-foreground">No page views tracked yet.</p>
+          ) : (
+            analytics.data?.topPages.map((p) => (
+              <div key={p.path} className="flex items-center justify-between gap-3 border-b border-border/50 py-2 text-sm last:border-0">
+                <span className="min-w-0 truncate">{p.path}</span>
+                <span className="shrink-0 text-muted-foreground">{p.views} views</span>
+              </div>
+            ))
+          )}
+        </Panel>
+      </div>
+    </div>
+  );
+}
+
+function Panel({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-5">
+      <h2 className="font-serif text-xl">{title}</h2>
+      <div className="mt-4">{children}</div>
     </div>
   );
 }

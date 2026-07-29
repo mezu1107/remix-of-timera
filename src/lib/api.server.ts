@@ -37,15 +37,15 @@ export function safe<T extends (...args: any[]) => Promise<Response>>(fn: T): T 
   }) as T;
 }
 
-function env(name: string) {
-  const value = process.env[name];
+function env(name: string, fallbackName?: string) {
+  const value = process.env[name] ?? (fallbackName ? process.env[fallbackName] : undefined);
   if (!value) throw new Error(`Missing environment variable: ${name}`);
   return value;
 }
 
 function makeClient(accessToken?: string): SupabaseClient {
-  const url = env("SUPABASE_URL");
-  const key = env("SUPABASE_PUBLISHABLE_KEY");
+  const url = env("SUPABASE_URL", "VITE_SUPABASE_URL");
+  const key = env("SUPABASE_PUBLISHABLE_KEY", "VITE_SUPABASE_PUBLISHABLE_KEY");
   return createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
     global: {

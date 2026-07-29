@@ -94,7 +94,7 @@ export function Footer() {
 
         <div className="mt-16 flex flex-col-reverse items-center justify-between gap-6 border-t border-border/40 pt-8 md:flex-row">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Timera. All rights reserved. Handcrafted in Switzerland.
+            © {new Date().getFullYear()} Timera. All rights reserved. Store built by AM Enterprises.
           </p>
           <div className="flex items-center gap-4">
             {[Instagram, Facebook, Youtube, Twitter].map((Icon, i) => (

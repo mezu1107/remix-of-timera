@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { couponsQuery, paymentSettingsQuery } from "@/lib/catalog";
 import { supabase } from "@/integrations/supabase/client";
 import { CheckCircle2, Lock, Loader2, Truck, ShieldCheck, Gift } from "lucide-react";
 import { toast } from "sonner";
+import { trackEvent } from "@/lib/tracking";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -38,6 +39,7 @@ function CheckoutPage() {
   const [appliedCode, setAppliedCode] = useState<string | null>(null);
   const [payMethod, setPayMethod] = useState<PayMethod>("cod");
   const [placed, setPlaced] = useState<{ orderNumber: string; email: string } | null>(null);
+  const checkoutTracked = useRef(false);
 
   const subtotal = items.reduce((a, i) => a + (i.product.salePrice ?? i.product.price) * i.quantity, 0);
 
@@ -56,6 +58,17 @@ function CheckoutPage() {
   const shipping = subtotal - discount >= freeAbove ? 0 : deliveryBase;
   const codExtra = payMethod === "cod" ? Number(settings?.codCharge ?? 0) : 0;
   const total = Math.max(0, subtotal - discount + shipping + codExtra);
+
+  useEffect(() => {
+    if (checkoutTracked.current || items.length === 0) return;
+    checkoutTracked.current = true;
+    void trackEvent("begin_checkout", {
+      value: total,
+      metadata: {
+        items: items.map((i) => ({ item_id: i.product.id, item_name: i.product.name, quantity: i.quantity, price: i.product.salePrice ?? i.product.price })),
+      },
+    });
+  }, [items, total]);
 
   const methods: { id: PayMethod; label: string; sub?: string }[] = [];
   if (settings?.codEnabled ?? true) methods.push({ id: "cod", label: "Cash on Delivery", sub: codExtra ? `+ ${formatPrice(codExtra)} handling` : "Pay in cash when your order arrives" });
@@ -117,6 +130,15 @@ function CheckoutPage() {
       return { orderNumber, email: payload.customer_email };
     },
     onSuccess: (r) => {
+      void trackEvent("purchase", {
+        orderNumber: r.orderNumber,
+        value: total,
+        metadata: {
+          coupon: appliedCode,
+          payment_method: payMethod,
+          items: items.map((i) => ({ item_id: i.product.id, item_name: i.product.name, quantity: i.quantity, price: i.product.salePrice ?? i.product.price })),
+        },
+      });
       setPlaced(r);
       clear();
       toast.success("Order placed — hamari team jald rabta kare gi.");

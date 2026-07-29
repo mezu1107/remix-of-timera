@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/lib/utils";
 import { aiWriteProductCopy } from "@/lib/ai.functions";
 import { parseColorsText } from "@/components/admin/ColorsField";
+import { ProductCsvImport } from "@/components/admin/ProductCsvImport";
 
 export const Route = createFileRoute("/admin/products")({ component: ProductsAdmin });
 
@@ -37,7 +38,9 @@ function ProductsAdmin() {
   });
 
   return (
-    <CrudModule
+    <div className="space-y-6">
+      <ProductCsvImport />
+      <CrudModule
       table="products"
       title="Products"
       description="Your catalogue. New and edited products appear in the shop instantly."
@@ -161,6 +164,7 @@ function ProductsAdmin() {
         { section: "Visibility", key: "featured", label: "Featured on homepage", type: "switch" },
         { section: "Visibility", key: "active", label: "Live on site", type: "switch", default: true },
       ]}
-    />
+      />
+    </div>
   );
 }

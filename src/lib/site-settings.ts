@@ -32,6 +32,10 @@ export type SiteSettings = {
   featureCtaHref: string | null;
   featureImageUrl: string | null;
   featureEndsAt: string | null;
+  trackingEnabled: boolean;
+  metaPixelId: string | null;
+  googleTagId: string | null;
+  googleAdsPurchaseLabel: string | null;
 };
 
 const asStrings = (v: unknown): string[] =>
@@ -77,6 +81,10 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   featureCtaHref: "/shop",
   featureImageUrl: null,
   featureEndsAt: null,
+  trackingEnabled: false,
+  metaPixelId: null,
+  googleTagId: null,
+  googleAdsPurchaseLabel: null,
 };
 
 export function mapSiteSettings(r: Record<string, any> | null | undefined): SiteSettings {
@@ -110,6 +118,10 @@ export function mapSiteSettings(r: Record<string, any> | null | undefined): Site
     featureCtaHref: r.feature_cta_href ?? "/shop",
     featureImageUrl: r.feature_image_url ?? null,
     featureEndsAt: r.feature_ends_at ?? null,
+    trackingEnabled: r.tracking_enabled ?? false,
+    metaPixelId: r.meta_pixel_id ?? null,
+    googleTagId: r.google_tag_id ?? null,
+    googleAdsPurchaseLabel: r.google_ads_purchase_label ?? null,
   };
 }
 
