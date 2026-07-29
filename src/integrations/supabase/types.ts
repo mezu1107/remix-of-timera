@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          created_at: string
+          currency: string
+          event_name: string
+          id: string
+          metadata: Json
+          order_number: string | null
+          page_path: string | null
+          product_id: string | null
+          product_name: string | null
+          product_slug: string | null
+          referrer: string | null
+          session_id: string | null
+          user_agent: string | null
+          value: number | null
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          event_name: string
+          id?: string
+          metadata?: Json
+          order_number?: string | null
+          page_path?: string | null
+          product_id?: string | null
+          product_name?: string | null
+          product_slug?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          value?: number | null
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          event_name?: string
+          id?: string
+          metadata?: Json
+          order_number?: string | null
+          page_path?: string | null
+          product_id?: string | null
+          product_name?: string | null
+          product_slug?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          value?: number | null
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           author: string
