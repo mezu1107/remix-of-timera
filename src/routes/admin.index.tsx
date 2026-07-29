@@ -34,19 +34,26 @@ function AdminOverview() {
 
   const analytics = useQuery({
     queryKey: ["admin", "analytics", "overview"],
+    refetchInterval: 15000,
     queryFn: async () => {
       const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
       const liveSince = Date.now() - 5 * 60 * 1000;
+      const hourSince = Date.now() - 60 * 60 * 1000;
       const { data, error } = await (supabase.from("analytics_events" as any) as any)
         .select("event_name,session_id,page_path,product_slug,product_name,created_at")
         .gte("created_at", since24h)
         .order("created_at", { ascending: false })
-        .limit(1000);
+        .limit(2000);
       if (error) throw error;
       const rows = (data ?? []) as Record<string, any>[];
       const count = (name: string) => rows.filter((r) => r.event_name === name).length;
+      const countSince = (name: string, ts: number) =>
+        rows.filter((r) => r.event_name === name && new Date(r.created_at).getTime() >= ts).length;
       const liveVisitors = new Set(
         rows.filter((r) => r.session_id && new Date(r.created_at).getTime() >= liveSince).map((r) => String(r.session_id)),
+      ).size;
+      const activeCarts = new Set(
+        rows.filter((r) => r.event_name === "add_to_cart" && r.session_id && new Date(r.created_at).getTime() >= hourSince).map((r) => String(r.session_id)),
       ).size;
       const topProducts = Object.values(
         rows.filter((r) => r.event_name === "view_item" && r.product_name).reduce<Record<string, { name: string; slug: string; views: number }>>((acc, r) => {
@@ -63,9 +70,23 @@ function AdminOverview() {
           return acc;
         }, {}),
       ).map(([path, views]) => ({ path, views })).sort((a, b) => b.views - a.views).slice(0, 5);
-      return { liveVisitors, pageViews: count("page_view"), productViews: count("view_item"), checkouts: count("begin_checkout"), purchases: count("purchase"), topProducts, topPages };
+      return {
+        liveVisitors,
+        activeCarts,
+        addToCartHour: countSince("add_to_cart", hourSince),
+        checkoutsHour: countSince("begin_checkout", hourSince),
+        purchasesHour: countSince("purchase", hourSince),
+        pageViewsHour: countSince("page_view", hourSince),
+        pageViews: count("page_view"),
+        productViews: count("view_item"),
+        checkouts: count("begin_checkout"),
+        purchases: count("purchase"),
+        topProducts,
+        topPages,
+      };
     },
   });
+
 
   const cards = [
     { label: "Products", value: products.data ?? 0, to: "/admin/products" },
