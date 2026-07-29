@@ -1,8 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import atelierImg from "@/assets/atelier.jpg";
-import heroAsset from "@/assets/hero-1.jpg.asset.json";
+import heroImg from "@/assets/hero-1.jpg";
 
-const heroImg = heroAsset.url;
 import { Award, Gem, Globe2, Users } from "lucide-react";
 
 export const Route = createFileRoute("/about")({
