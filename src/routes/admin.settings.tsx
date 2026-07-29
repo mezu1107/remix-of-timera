@@ -93,6 +93,10 @@ function SettingsAdmin() {
         facebook_url: f.facebook_url || null,
         tiktok_url: f.tiktok_url || null,
         youtube_url: f.youtube_url || null,
+        tracking_enabled: !!f.tracking_enabled,
+        meta_pixel_id: f.meta_pixel_id || null,
+        google_tag_id: f.google_tag_id || null,
+        google_ads_purchase_label: f.google_ads_purchase_label || null,
         feature_enabled: !!f.feature_enabled,
         feature_eyebrow: f.feature_eyebrow || null,
         feature_title: f.feature_title || null,
@@ -181,6 +185,21 @@ function SettingsAdmin() {
           <Field label="Facebook URL"><Input value={f.facebook_url ?? ""} onChange={(e) => set("facebook_url", e.target.value)} /></Field>
           <Field label="TikTok URL"><Input value={f.tiktok_url ?? ""} onChange={(e) => set("tiktok_url", e.target.value)} /></Field>
           <Field label="YouTube URL"><Input value={f.youtube_url ?? ""} onChange={(e) => set("youtube_url", e.target.value)} /></Field>
+        </Row2>
+      </Card>
+
+      <Card title="Pixels & tracking">
+        <Toggle checked={!!f.tracking_enabled} onChange={(v) => set("tracking_enabled", v)} label="Enable tracking on the storefront" />
+        <Row2>
+          <Field label="Meta Pixel ID" help="Example: 123456789012345">
+            <Input value={f.meta_pixel_id ?? ""} onChange={(e) => set("meta_pixel_id", e.target.value)} placeholder="Meta Pixel ID" />
+          </Field>
+          <Field label="Google tag / GA4 ID" help="Example: G-XXXXXXXXXX or AW-XXXXXXXXXX">
+            <Input value={f.google_tag_id ?? ""} onChange={(e) => set("google_tag_id", e.target.value)} placeholder="G- or AW- tag ID" />
+          </Field>
+          <Field label="Google Ads purchase label" help="Optional conversion label for order purchases.">
+            <Input value={f.google_ads_purchase_label ?? ""} onChange={(e) => set("google_ads_purchase_label", e.target.value)} placeholder="Conversion label" />
+          </Field>
         </Row2>
       </Card>
 

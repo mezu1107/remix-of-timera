@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { colorSlug, mapProduct, productsQuery, type Product } from "@/lib/catalog";
@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReviewSummary } from "@/components/product/ReviewSummary";
 import { ProductCard } from "@/components/product/ProductCard";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { trackEvent } from "@/lib/tracking";
 
 export const Route = createFileRoute("/product/$slug")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -97,6 +98,16 @@ function ProductPage() {
 
   const { data: allProducts = [] } = useQuery(productsQuery);
   const related = allProducts.filter((p) => p.id !== product.id && p.collection === product.collection).slice(0, 4);
+
+  useEffect(() => {
+    void trackEvent("view_item", {
+      productId: product.id,
+      productSlug: product.slug,
+      productName: product.name,
+      value: product.salePrice ?? product.price,
+      metadata: { collection: product.collection, category: product.category },
+    });
+  }, [product.id, product.slug, product.name, product.price, product.salePrice, product.collection, product.category]);
 
   return (
     <div className="container-luxe py-8 md:py-12">
@@ -279,7 +290,15 @@ function ProductPage() {
             </Button>
           </div>
 
-          <Button variant="outline" size="lg" className="mt-3 w-full h-12 border-primary/40">
+          <Button
+            variant="outline"
+            size="lg"
+            className="mt-3 w-full h-12 border-primary/40"
+            onClick={() => {
+              add(product, { color, size, quantity: qty });
+              navigate({ to: "/checkout" });
+            }}
+          >
             Buy now with express checkout
           </Button>
 

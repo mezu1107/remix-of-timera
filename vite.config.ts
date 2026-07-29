@@ -9,7 +9,7 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 // On Vercel, build with the Vercel preset so the output lands in `.vercel/output`
 // (Vercel Build Output API v3) and no output directory needs to be configured.
 // Everywhere else (Lovable preview/publish) the default Cloudflare target is used.
-const isVercel = !!process.env.VERCEL;
+const isVercel = !!process.env.VERCEL || process.env.NITRO_PRESET === "vercel";
 
 export default defineConfig({
   tanstackStart: {

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Product } from "@/lib/products";
+import { trackEvent } from "@/lib/tracking";
 
 export type CartItem = {
   id: string;
@@ -26,14 +27,22 @@ export const useCart = create<CartState>()(
     (set) => ({
       items: [],
       isOpen: false,
-      add: (product, opts) =>
+      add: (product, opts) => {
+        const quantity = opts?.quantity ?? 1;
+        void trackEvent("add_to_cart", {
+          productId: product.id,
+          productSlug: product.slug,
+          productName: product.name,
+          value: (product.salePrice ?? product.price) * quantity,
+          metadata: { quantity, color: opts?.color ?? null, size: opts?.size ?? null },
+        });
         set((state) => {
           const key = `${product.id}-${opts?.color ?? ""}-${opts?.size ?? ""}`;
           const existing = state.items.find((i) => i.id === key);
           if (existing) {
             return {
               items: state.items.map((i) =>
-                i.id === key ? { ...i, quantity: i.quantity + (opts?.quantity ?? 1) } : i,
+                i.id === key ? { ...i, quantity: i.quantity + quantity } : i,
               ),
               isOpen: true,
             };
@@ -41,11 +50,12 @@ export const useCart = create<CartState>()(
           return {
             items: [
               ...state.items,
-              { id: key, product, quantity: opts?.quantity ?? 1, color: opts?.color, size: opts?.size },
+              { id: key, product, quantity, color: opts?.color, size: opts?.size },
             ],
             isOpen: true,
           };
-        }),
+        });
+      },
       remove: (id) => set((s) => ({ items: s.items.filter((i) => i.id !== id) })),
       updateQty: (id, qty) =>
         set((s) => ({
