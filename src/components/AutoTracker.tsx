@@ -18,8 +18,8 @@ export function AutoTracker() {
   useEffect(() => {
     firedDepths.current = new Set();
     firedTimes.current = new Set();
-    void trackPageView(location.pathname + location.search);
-  }, [location.pathname, location.search]);
+    void trackPageView(location.pathname + (location.searchStr ?? ""));
+  }, [location.pathname, location.searchStr]);
 
   // Scroll depth
   useEffect(() => {
