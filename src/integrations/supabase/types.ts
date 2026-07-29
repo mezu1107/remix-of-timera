@@ -691,13 +691,17 @@ export type Database = {
           feature_title_accent: string | null
           featured_in: Json
           footer_links: Json
+          google_ads_purchase_label: string | null
+          google_tag_id: string | null
           id: string
           instagram_url: string | null
           logo_url: string | null
           marquee_enabled: boolean
           marquee_items: Json
+          meta_pixel_id: string | null
           nav_links: Json
           tiktok_url: string | null
+          tracking_enabled: boolean
           updated_at: string
           warranty_years: number
           whatsapp_number: string | null
@@ -723,13 +727,17 @@ export type Database = {
           feature_title_accent?: string | null
           featured_in?: Json
           footer_links?: Json
+          google_ads_purchase_label?: string | null
+          google_tag_id?: string | null
           id?: string
           instagram_url?: string | null
           logo_url?: string | null
           marquee_enabled?: boolean
           marquee_items?: Json
+          meta_pixel_id?: string | null
           nav_links?: Json
           tiktok_url?: string | null
+          tracking_enabled?: boolean
           updated_at?: string
           warranty_years?: number
           whatsapp_number?: string | null
@@ -755,13 +763,17 @@ export type Database = {
           feature_title_accent?: string | null
           featured_in?: Json
           footer_links?: Json
+          google_ads_purchase_label?: string | null
+          google_tag_id?: string | null
           id?: string
           instagram_url?: string | null
           logo_url?: string | null
           marquee_enabled?: boolean
           marquee_items?: Json
+          meta_pixel_id?: string | null
           nav_links?: Json
           tiktok_url?: string | null
+          tracking_enabled?: boolean
           updated_at?: string
           warranty_years?: number
           whatsapp_number?: string | null
