@@ -34,19 +34,26 @@ function AdminOverview() {
 
   const analytics = useQuery({
     queryKey: ["admin", "analytics", "overview"],
+    refetchInterval: 15000,
     queryFn: async () => {
       const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
       const liveSince = Date.now() - 5 * 60 * 1000;
+      const hourSince = Date.now() - 60 * 60 * 1000;
       const { data, error } = await (supabase.from("analytics_events" as any) as any)
         .select("event_name,session_id,page_path,product_slug,product_name,created_at")
         .gte("created_at", since24h)
         .order("created_at", { ascending: false })
-        .limit(1000);
+        .limit(2000);
       if (error) throw error;
       const rows = (data ?? []) as Record<string, any>[];
       const count = (name: string) => rows.filter((r) => r.event_name === name).length;
+      const countSince = (name: string, ts: number) =>
+        rows.filter((r) => r.event_name === name && new Date(r.created_at).getTime() >= ts).length;
       const liveVisitors = new Set(
         rows.filter((r) => r.session_id && new Date(r.created_at).getTime() >= liveSince).map((r) => String(r.session_id)),
+      ).size;
+      const activeCarts = new Set(
+        rows.filter((r) => r.event_name === "add_to_cart" && r.session_id && new Date(r.created_at).getTime() >= hourSince).map((r) => String(r.session_id)),
       ).size;
       const topProducts = Object.values(
         rows.filter((r) => r.event_name === "view_item" && r.product_name).reduce<Record<string, { name: string; slug: string; views: number }>>((acc, r) => {
@@ -63,9 +70,23 @@ function AdminOverview() {
           return acc;
         }, {}),
       ).map(([path, views]) => ({ path, views })).sort((a, b) => b.views - a.views).slice(0, 5);
-      return { liveVisitors, pageViews: count("page_view"), productViews: count("view_item"), checkouts: count("begin_checkout"), purchases: count("purchase"), topProducts, topPages };
+      return {
+        liveVisitors,
+        activeCarts,
+        addToCartHour: countSince("add_to_cart", hourSince),
+        checkoutsHour: countSince("begin_checkout", hourSince),
+        purchasesHour: countSince("purchase", hourSince),
+        pageViewsHour: countSince("page_view", hourSince),
+        pageViews: count("page_view"),
+        productViews: count("view_item"),
+        checkouts: count("begin_checkout"),
+        purchases: count("purchase"),
+        topProducts,
+        topPages,
+      };
     },
   });
+
 
   const cards = [
     { label: "Products", value: products.data ?? 0, to: "/admin/products" },
@@ -80,12 +101,39 @@ function AdminOverview() {
     { label: "Purchases 24h", value: analytics.data?.purchases ?? 0, to: "/admin/orders" },
   ];
 
+  const live = [
+    { label: "Live visitors (5m)", value: analytics.data?.liveVisitors ?? 0, hot: true },
+    { label: "Active carts (1h)", value: analytics.data?.activeCarts ?? 0 },
+    { label: "Add to cart (1h)", value: analytics.data?.addToCartHour ?? 0 },
+    { label: "Checkouts (1h)", value: analytics.data?.checkoutsHour ?? 0 },
+    { label: "Purchases (1h)", value: analytics.data?.purchasesHour ?? 0 },
+    { label: "Page views (1h)", value: analytics.data?.pageViewsHour ?? 0 },
+  ];
+
   return (
     <div>
       <h1 className="font-serif text-3xl md:text-4xl">Overview</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Every change you make here appears on the public storefront immediately.
+        Every change you make here appears on the public storefront immediately. Live stats refresh every 15s.
       </p>
+      <div className="mt-6 rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 via-card to-card p-5">
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+          </span>
+          <p className="text-[11px] uppercase tracking-[0.25em] text-primary">Live now</p>
+        </div>
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {live.map((l) => (
+            <div key={l.label} className="rounded-lg border border-border/60 bg-background/40 p-3">
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{l.label}</p>
+              <p className={`mt-1 font-serif text-2xl ${l.hot ? "gold-text" : ""}`}>{l.value}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((c) => (
           <Link key={c.label} to={c.to as any} className="rounded-xl border border-border bg-card p-6 hover:border-primary/50 transition">

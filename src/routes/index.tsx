@@ -349,9 +349,9 @@ function HomePage() {
         </section>
       )}
 
-      {/* TESTIMONIALS */}
+      {/* TESTIMONIALS — two rows, opposite directions */}
       {testimonials.length > 0 && (
-      <section className="bg-onyx py-16 sm:py-24">
+      <section className="bg-onyx py-16 sm:py-24 overflow-hidden">
         <div className="container-luxe">
           <div className="text-center">
             <p className="text-[11px] uppercase tracking-[0.3em] text-primary">Voices</p>
@@ -359,32 +359,44 @@ function HomePage() {
               The word from <span className="italic gold-text">our clients</span>
             </h2>
           </div>
-          <div className="mt-10 grid gap-5 sm:mt-14 sm:grid-cols-2 lg:grid-cols-4">
-            {testimonials.map((t, i) => (
-              <motion.div
-                key={t.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
-                className="rounded-xl border border-border bg-card p-6"
-              >
-                <div className="flex gap-0.5 text-primary">
-                  {Array.from({ length: Math.max(1, Math.min(5, t.rating)) }).map((_, k) => (
-                    <Star key={k} className="h-3.5 w-3.5 fill-current" />
-                  ))}
-                </div>
-                <p className="mt-4 font-serif text-lg leading-snug">"{t.quote}"</p>
-                <div className="mt-6 border-t border-border pt-4">
-                  <p className="text-sm font-medium">{t.name}</p>
-                  <p className="text-xs text-muted-foreground">{t.role}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
         </div>
+        {(() => {
+          const half = Math.ceil(testimonials.length / 2);
+          const rowA = testimonials.slice(0, half);
+          const rowB = testimonials.slice(half).length ? testimonials.slice(half) : testimonials.slice(0, half);
+          const Card = ({ t }: { t: typeof testimonials[number] }) => (
+            <div className="mx-3 w-[300px] sm:w-[360px] shrink-0 rounded-xl border border-border bg-card p-6">
+              <div className="flex gap-0.5 text-primary">
+                {Array.from({ length: Math.max(1, Math.min(5, t.rating)) }).map((_, k) => (
+                  <Star key={k} className="h-3.5 w-3.5 fill-current" />
+                ))}
+              </div>
+              <p className="mt-4 font-serif text-lg leading-snug line-clamp-4">"{t.quote}"</p>
+              <div className="mt-6 border-t border-border pt-4">
+                <p className="text-sm font-medium">{t.name}</p>
+                <p className="text-xs text-muted-foreground">{t.role}</p>
+              </div>
+            </div>
+          );
+          const Row = ({ items, reverse }: { items: typeof testimonials; reverse?: boolean }) => (
+            <div
+              className="group relative mt-8 overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]"
+            >
+              <div className={`flex w-max ${reverse ? "marquee-reverse" : "marquee-slow"} group-hover:[animation-play-state:paused]`}>
+                {[...items, ...items].map((t, i) => <Card key={`${t.id}-${i}`} t={t} />)}
+              </div>
+            </div>
+          );
+          return (
+            <>
+              <Row items={rowA} />
+              <Row items={rowB} reverse />
+            </>
+          );
+        })()}
       </section>
       )}
+
 
       {/* NEW ARRIVALS */}
       {newArrivals.length > 0 && (
