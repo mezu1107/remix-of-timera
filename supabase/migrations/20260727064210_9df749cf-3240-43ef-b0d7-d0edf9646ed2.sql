@@ -59,7 +59,7 @@ INSERT INTO public.site_settings (
   'Limited Edition Release', 'The Nocturne', 'Phantom',
   'Only 250 pieces worldwide. Skeleton dial, black-DLC titanium case. Reserve yours before the countdown closes.',
   'Reserve Now', '/shop',
-  '/__l5e/assets-v1/b06a4888-3bf8-4f99-a408-0c0ecccfa1f0/hero-3.jpg',
+  '/__l5e/assets-v1/e690a484-2e44-4623-934b-4394e04c12b9/hero-3.jpg',
   now() + interval '3 days'
 );
 
