@@ -101,12 +101,39 @@ function AdminOverview() {
     { label: "Purchases 24h", value: analytics.data?.purchases ?? 0, to: "/admin/orders" },
   ];
 
+  const live = [
+    { label: "Live visitors (5m)", value: analytics.data?.liveVisitors ?? 0, hot: true },
+    { label: "Active carts (1h)", value: analytics.data?.activeCarts ?? 0 },
+    { label: "Add to cart (1h)", value: analytics.data?.addToCartHour ?? 0 },
+    { label: "Checkouts (1h)", value: analytics.data?.checkoutsHour ?? 0 },
+    { label: "Purchases (1h)", value: analytics.data?.purchasesHour ?? 0 },
+    { label: "Page views (1h)", value: analytics.data?.pageViewsHour ?? 0 },
+  ];
+
   return (
     <div>
       <h1 className="font-serif text-3xl md:text-4xl">Overview</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Every change you make here appears on the public storefront immediately.
+        Every change you make here appears on the public storefront immediately. Live stats refresh every 15s.
       </p>
+      <div className="mt-6 rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 via-card to-card p-5">
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+          </span>
+          <p className="text-[11px] uppercase tracking-[0.25em] text-primary">Live now</p>
+        </div>
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {live.map((l) => (
+            <div key={l.label} className="rounded-lg border border-border/60 bg-background/40 p-3">
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{l.label}</p>
+              <p className={`mt-1 font-serif text-2xl ${l.hot ? "gold-text" : ""}`}>{l.value}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((c) => (
           <Link key={c.label} to={c.to as any} className="rounded-xl border border-border bg-card p-6 hover:border-primary/50 transition">
