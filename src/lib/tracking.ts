@@ -3,11 +3,29 @@ import { supabase } from "@/integrations/supabase/client";
 export type TrackingEventName =
   | "page_view"
   | "view_item"
+  | "view_item_list"
   | "add_to_cart"
+  | "remove_from_cart"
   | "begin_checkout"
+  | "add_payment_info"
   | "purchase"
   | "search"
-  | "view_cart";
+  | "view_cart"
+  | "add_to_wishlist"
+  | "share"
+  | "sign_up"
+  | "login"
+  | "contact"
+  | "whatsapp_click"
+  | "scroll_depth"
+  | "time_on_page"
+  | "outbound_click"
+  | "video_play"
+  | "newsletter_signup"
+  | "coupon_applied"
+  | "quick_view"
+  | "filter_apply"
+  | "sort_change";
 
 type GtagFn = (...args: unknown[]) => void;
 type FbqFn = ((...args: unknown[]) => void) & { queue?: unknown[]; loaded?: boolean; version?: string };
