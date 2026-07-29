@@ -17,6 +17,7 @@ import { CartDrawer } from "@/components/layout/CartDrawer";
 import { PromoPopup } from "@/components/PromoPopup";
 import { AiAssistant } from "@/components/AiAssistant";
 import { TrackingPixels } from "@/components/TrackingPixels";
+import { AutoTracker } from "@/components/AutoTracker";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -159,7 +160,9 @@ function RootComponent() {
         <CartDrawer />
         <PromoPopup />
         <TrackingPixels />
+        <AutoTracker />
         <AiAssistant />
+
 
         <Toaster position="bottom-right" theme="light" />
       </div>
