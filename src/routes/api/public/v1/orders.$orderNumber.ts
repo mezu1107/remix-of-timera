@@ -13,8 +13,10 @@ export const Route = createFileRoute("/api/public/v1/orders/$orderNumber")({
 
         let query = client
           .from("orders")
-          .select("order_number,customer_name,items,subtotal,discount,shipping,total,status,created_at,updated_at")
-          .eq("order_number", params.orderNumber);
+          .select(
+            "order_number,customer_name,customer_phone,shipping_address,items,subtotal,discount,shipping,total,status,status_history,tracking_number,courier,estimated_delivery,created_at,updated_at",
+          )
+          .eq("order_number", params.orderNumber.trim().toUpperCase());
 
         if (user) query = query.eq("user_id", user.id);
         else if (email) query = query.eq("customer_email", email);
