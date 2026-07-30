@@ -332,11 +332,13 @@ export type Database = {
       orders: {
         Row: {
           coupon_code: string | null
+          courier: string | null
           created_at: string
           customer_email: string
           customer_name: string
           customer_phone: string | null
           discount: number
+          estimated_delivery: string | null
           id: string
           items: Json
           notes: string | null
@@ -344,18 +346,22 @@ export type Database = {
           shipping: number
           shipping_address: string | null
           status: string
+          status_history: Json
           subtotal: number
           total: number
+          tracking_number: string | null
           updated_at: string
           user_id: string | null
         }
         Insert: {
           coupon_code?: string | null
+          courier?: string | null
           created_at?: string
           customer_email: string
           customer_name: string
           customer_phone?: string | null
           discount?: number
+          estimated_delivery?: string | null
           id?: string
           items?: Json
           notes?: string | null
@@ -363,18 +369,22 @@ export type Database = {
           shipping?: number
           shipping_address?: string | null
           status?: string
+          status_history?: Json
           subtotal?: number
           total?: number
+          tracking_number?: string | null
           updated_at?: string
           user_id?: string | null
         }
         Update: {
           coupon_code?: string | null
+          courier?: string | null
           created_at?: string
           customer_email?: string
           customer_name?: string
           customer_phone?: string | null
           discount?: number
+          estimated_delivery?: string | null
           id?: string
           items?: Json
           notes?: string | null
@@ -382,8 +392,10 @@ export type Database = {
           shipping?: number
           shipping_address?: string | null
           status?: string
+          status_history?: Json
           subtotal?: number
           total?: number
+          tracking_number?: string | null
           updated_at?: string
           user_id?: string | null
         }
