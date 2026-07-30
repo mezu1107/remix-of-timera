@@ -67,11 +67,11 @@ export const Route = createFileRoute("/api/public/v1/orders/")({
         const catalog = anonClient();
         const productQuery = catalog
           .from("products")
-          .select("id, slug, name, price, sale_price, active");
+          .select("id, slug, name, price, sale_price, active, image_url, brand");
 
         const [byId, bySlug] = await Promise.all([
           ids.length ? productQuery.in("id", ids) : Promise.resolve({ data: [], error: null } as any),
-          slugs.length ? catalog.from("products").select("id, slug, name, price, sale_price, active").in("slug", slugs) : Promise.resolve({ data: [], error: null } as any),
+          slugs.length ? catalog.from("products").select("id, slug, name, price, sale_price, active, image_url, brand").in("slug", slugs) : Promise.resolve({ data: [], error: null } as any),
         ]);
         if (byId.error) return apiError(byId.error.message, 500);
         if (bySlug.error) return apiError(bySlug.error.message, 500);
@@ -87,6 +87,8 @@ export const Route = createFileRoute("/api/public/v1/orders/")({
           product_id: string | null;
           slug: string | null;
           name: string;
+          image_url: string | null;
+          brand: string | null;
           price: number;
           quantity: number;
           color: string | null;
@@ -102,6 +104,8 @@ export const Route = createFileRoute("/api/public/v1/orders/")({
             product_id: p.id,
             slug: p.slug ?? null,
             name: String(p.name ?? "").slice(0, 160),
+            image_url: p.image_url ?? null,
+            brand: p.brand ?? null,
             price,
             quantity: it.quantity,
             color: it.color,
