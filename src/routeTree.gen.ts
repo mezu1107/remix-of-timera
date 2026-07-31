@@ -25,6 +25,7 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DealsIndexRouteImport } from './routes/deals.index'
+import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as PoliciesSlugRouteImport } from './routes/policies.$slug'
@@ -147,6 +148,11 @@ const IndexRoute = IndexRouteImport.update({
 const DealsIndexRoute = DealsIndexRouteImport.update({
   id: '/deals/',
   path: '/deals/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
+  id: '/collections/',
+  path: '/collections/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -404,6 +410,7 @@ export interface FileRoutesByFullPath {
   '/policies/$slug': typeof PoliciesSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/collections/': typeof CollectionsIndexRoute
   '/deals/': typeof DealsIndexRoute
   '/api/public/v1/categories': typeof ApiPublicV1CategoriesRoute
   '/api/public/v1/collections': typeof ApiPublicV1CollectionsRoute
@@ -464,6 +471,7 @@ export interface FileRoutesByTo {
   '/policies/$slug': typeof PoliciesSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/collections': typeof CollectionsIndexRoute
   '/deals': typeof DealsIndexRoute
   '/api/public/v1/categories': typeof ApiPublicV1CategoriesRoute
   '/api/public/v1/collections': typeof ApiPublicV1CollectionsRoute
@@ -526,6 +534,7 @@ export interface FileRoutesById {
   '/policies/$slug': typeof PoliciesSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/collections/': typeof CollectionsIndexRoute
   '/deals/': typeof DealsIndexRoute
   '/api/public/v1/categories': typeof ApiPublicV1CategoriesRoute
   '/api/public/v1/collections': typeof ApiPublicV1CollectionsRoute
@@ -589,6 +598,7 @@ export interface FileRouteTypes {
     | '/policies/$slug'
     | '/product/$slug'
     | '/admin/'
+    | '/collections/'
     | '/deals/'
     | '/api/public/v1/categories'
     | '/api/public/v1/collections'
@@ -649,6 +659,7 @@ export interface FileRouteTypes {
     | '/policies/$slug'
     | '/product/$slug'
     | '/admin'
+    | '/collections'
     | '/deals'
     | '/api/public/v1/categories'
     | '/api/public/v1/collections'
@@ -710,6 +721,7 @@ export interface FileRouteTypes {
     | '/policies/$slug'
     | '/product/$slug'
     | '/admin/'
+    | '/collections/'
     | '/deals/'
     | '/api/public/v1/categories'
     | '/api/public/v1/collections'
@@ -758,6 +770,7 @@ export interface RootRouteChildren {
   DealsSlugRoute: typeof DealsSlugRoute
   PoliciesSlugRoute: typeof PoliciesSlugRoute
   ProductSlugRoute: typeof ProductSlugRoute
+  CollectionsIndexRoute: typeof CollectionsIndexRoute
   DealsIndexRoute: typeof DealsIndexRoute
   ApiPublicV1CategoriesRoute: typeof ApiPublicV1CategoriesRoute
   ApiPublicV1CollectionsRoute: typeof ApiPublicV1CollectionsRoute
@@ -898,6 +911,13 @@ declare module '@tanstack/react-router' {
       path: '/deals'
       fullPath: '/deals/'
       preLoaderRoute: typeof DealsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/': {
+      id: '/collections/'
+      path: '/collections'
+      fullPath: '/collections/'
+      preLoaderRoute: typeof CollectionsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -1260,6 +1280,7 @@ const rootRouteChildren: RootRouteChildren = {
   DealsSlugRoute: DealsSlugRoute,
   PoliciesSlugRoute: PoliciesSlugRoute,
   ProductSlugRoute: ProductSlugRoute,
+  CollectionsIndexRoute: CollectionsIndexRoute,
   DealsIndexRoute: DealsIndexRoute,
   ApiPublicV1CategoriesRoute: ApiPublicV1CategoriesRoute,
   ApiPublicV1CollectionsRoute: ApiPublicV1CollectionsRoute,
