@@ -240,6 +240,7 @@ export type Database = {
           ends_at: string | null
           id: string
           image_url: string | null
+          slug: string | null
           sort_order: number
           starts_at: string | null
           subtitle: string | null
@@ -258,6 +259,7 @@ export type Database = {
           ends_at?: string | null
           id?: string
           image_url?: string | null
+          slug?: string | null
           sort_order?: number
           starts_at?: string | null
           subtitle?: string | null
@@ -276,10 +278,44 @@ export type Database = {
           ends_at?: string | null
           id?: string
           image_url?: string | null
+          slug?: string | null
           sort_order?: number
           starts_at?: string | null
           subtitle?: string | null
           title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      faqs: {
+        Row: {
+          active: boolean
+          answer: string
+          category: string | null
+          created_at: string
+          id: string
+          question: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          answer: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          question: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          answer?: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          question?: string
+          sort_order?: number
           updated_at?: string
         }
         Relationships: []
@@ -740,6 +776,7 @@ export type Database = {
           brand_suffix: string | null
           brand_tagline: string | null
           contact_email: string | null
+          contact_hours: string | null
           contact_phone: string | null
           created_at: string
           facebook_url: string | null
@@ -776,6 +813,7 @@ export type Database = {
           brand_suffix?: string | null
           brand_tagline?: string | null
           contact_email?: string | null
+          contact_hours?: string | null
           contact_phone?: string | null
           created_at?: string
           facebook_url?: string | null
@@ -812,6 +850,7 @@ export type Database = {
           brand_suffix?: string | null
           brand_tagline?: string | null
           contact_email?: string | null
+          contact_hours?: string | null
           contact_phone?: string | null
           created_at?: string
           facebook_url?: string | null
