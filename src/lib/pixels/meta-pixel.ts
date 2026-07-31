@@ -20,12 +20,9 @@ type FbqFn = ((...args: unknown[]) => void) & {
   version?: string;
 };
 
-declare global {
-  interface Window {
-    fbq?: FbqFn;
-    _fbq?: FbqFn;
-  }
-}
+type PixelWindow = Window & { fbq?: FbqFn; _fbq?: FbqFn };
+
+const w = () => window as unknown as PixelWindow;
 
 /** Standard Meta events we use across the storefront. */
 export type MetaStandardEvent =
@@ -49,7 +46,7 @@ const clean = (v: unknown) => String(v ?? "").trim();
 /** Creates the fbq stub exactly as the official snippet does. */
 function ensureStub() {
   if (typeof window === "undefined") return null;
-  if (window.fbq) return window.fbq;
+  if (w().fbq) return w().fbq!;
 
   const fbq: FbqFn = function (...args: unknown[]) {
     if (fbq.callMethod) fbq.callMethod.apply(fbq, args);
@@ -61,8 +58,8 @@ function ensureStub() {
   fbq.version = "2.0";
   fbq.queue = [];
 
-  window.fbq = fbq;
-  if (!window._fbq) window._fbq = fbq;
+  w().fbq = fbq;
+  if (!w()._fbq) w()._fbq = fbq;
   return fbq;
 }
 
@@ -118,14 +115,14 @@ export const metaPixelIds = () => [...activePixels];
 export function metaTrack(event: MetaStandardEvent, params: Record<string, unknown> = {}) {
   if (typeof window === "undefined") return;
   if (!activePixels.size) initMetaPixel();
-  window.fbq?.("track", event, prune(params));
+  w().fbq?.("track", event, prune(params));
 }
 
 /** Fires a custom (non-standard) Meta event. */
 export function metaTrackCustom(event: string, params: Record<string, unknown> = {}) {
   if (typeof window === "undefined") return;
   if (!activePixels.size) initMetaPixel();
-  window.fbq?.("trackCustom", event, prune(params));
+  w().fbq?.("trackCustom", event, prune(params));
 }
 
 function prune(params: Record<string, unknown>) {

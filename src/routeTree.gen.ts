@@ -24,6 +24,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DealsIndexRouteImport } from './routes/deals.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as PoliciesSlugRouteImport } from './routes/policies.$slug'
@@ -140,6 +141,11 @@ const AboutRoute = AboutRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DealsIndexRoute = DealsIndexRouteImport.update({
+  id: '/deals/',
+  path: '/deals/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -391,6 +397,7 @@ export interface FileRoutesByFullPath {
   '/policies/$slug': typeof PoliciesSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/deals/': typeof DealsIndexRoute
   '/api/public/v1/categories': typeof ApiPublicV1CategoriesRoute
   '/api/public/v1/collections': typeof ApiPublicV1CollectionsRoute
   '/api/public/v1/deals': typeof ApiPublicV1DealsRoute
@@ -449,6 +456,7 @@ export interface FileRoutesByTo {
   '/policies/$slug': typeof PoliciesSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/deals': typeof DealsIndexRoute
   '/api/public/v1/categories': typeof ApiPublicV1CategoriesRoute
   '/api/public/v1/collections': typeof ApiPublicV1CollectionsRoute
   '/api/public/v1/deals': typeof ApiPublicV1DealsRoute
@@ -509,6 +517,7 @@ export interface FileRoutesById {
   '/policies/$slug': typeof PoliciesSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/deals/': typeof DealsIndexRoute
   '/api/public/v1/categories': typeof ApiPublicV1CategoriesRoute
   '/api/public/v1/collections': typeof ApiPublicV1CollectionsRoute
   '/api/public/v1/deals': typeof ApiPublicV1DealsRoute
@@ -570,6 +579,7 @@ export interface FileRouteTypes {
     | '/policies/$slug'
     | '/product/$slug'
     | '/admin/'
+    | '/deals/'
     | '/api/public/v1/categories'
     | '/api/public/v1/collections'
     | '/api/public/v1/deals'
@@ -628,6 +638,7 @@ export interface FileRouteTypes {
     | '/policies/$slug'
     | '/product/$slug'
     | '/admin'
+    | '/deals'
     | '/api/public/v1/categories'
     | '/api/public/v1/collections'
     | '/api/public/v1/deals'
@@ -687,6 +698,7 @@ export interface FileRouteTypes {
     | '/policies/$slug'
     | '/product/$slug'
     | '/admin/'
+    | '/deals/'
     | '/api/public/v1/categories'
     | '/api/public/v1/collections'
     | '/api/public/v1/deals'
@@ -733,6 +745,7 @@ export interface RootRouteChildren {
   ApiChatRoute: typeof ApiChatRoute
   PoliciesSlugRoute: typeof PoliciesSlugRoute
   ProductSlugRoute: typeof ProductSlugRoute
+  DealsIndexRoute: typeof DealsIndexRoute
   ApiPublicV1CategoriesRoute: typeof ApiPublicV1CategoriesRoute
   ApiPublicV1CollectionsRoute: typeof ApiPublicV1CollectionsRoute
   ApiPublicV1DealsRoute: typeof ApiPublicV1DealsRoute
@@ -865,6 +878,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/deals/': {
+      id: '/deals/'
+      path: '/deals'
+      fullPath: '/deals/'
+      preLoaderRoute: typeof DealsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -1219,6 +1239,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiChatRoute: ApiChatRoute,
   PoliciesSlugRoute: PoliciesSlugRoute,
   ProductSlugRoute: ProductSlugRoute,
+  DealsIndexRoute: DealsIndexRoute,
   ApiPublicV1CategoriesRoute: ApiPublicV1CategoriesRoute,
   ApiPublicV1CollectionsRoute: ApiPublicV1CollectionsRoute,
   ApiPublicV1DealsRoute: ApiPublicV1DealsRoute,

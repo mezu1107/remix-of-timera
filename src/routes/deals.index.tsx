@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowUpRight, BadgePercent, Tag } from "lucide-react";
 import { dealsQuery, productsQuery } from "@/lib/catalog";
 
-export const Route = createFileRoute("/deals")({
+export const Route = createFileRoute("/deals/")({
   head: () => ({
     meta: [
       { title: "Watch Deals & Sale Offers in Pakistan | Timera" },
