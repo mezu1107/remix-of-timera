@@ -134,3 +134,67 @@ export const aiWriteProductCopy = createServerFn({ method: "POST" })
       seo_keywords: clamp(parsed.seo_keywords, 300),
     };
   });
+
+/* ------------------------------------------------------------------ */
+/* AI product extractor — admins only (PDF / free-text imports)        */
+/* ------------------------------------------------------------------ */
+export const aiExtractProducts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ text: z.string().min(20).max(120_000), source: z.string().max(200).optional() }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { data: adminRow } = await context.supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (!adminRow) throw new Error("Forbidden");
+
+    const gateway = createLovableAiGatewayProvider(requireApiKey());
+    const { text } = await generateText({
+      model: gateway(CHAT_MODEL),
+      system:
+        "You extract a product catalogue from raw text (PDF exports, price lists, spreadsheets pasted as text). " +
+        'Reply with strict JSON only: {"products":[{"name":"","price":0,"sale_price":null,"description":"","brand":"",' +
+        '"collection":"","category":"","stock":null,"movement":"","case_material":"","strap":"","water_resistance":"",' +
+        '"colors":[""],"sizes":[""],"features":[""],"image_url":""}]}. ' +
+        "price is a plain number in PKR without symbols or commas. Use null when a value is genuinely absent — never invent prices. " +
+        "Write a 25-45 word description when the source has none. Extract EVERY product you can find, in source order.",
+      prompt: `Source: ${data.source ?? "upload"}\n\n${data.text}`.slice(0, 120_000),
+    });
+
+    const parsed = parseJson<{ products?: any[] }>(text, {});
+    const rows = Array.isArray(parsed.products) ? parsed.products : [];
+    const str = (v: unknown, n = 300) => (v == null ? "" : String(v).slice(0, n));
+    const arr = (v: unknown) => (Array.isArray(v) ? v.filter((x) => typeof x === "string").slice(0, 12) : []);
+    const numOrNull = (v: unknown) => {
+      const n = Number(String(v ?? "").replace(/[^0-9.]/g, ""));
+      return Number.isFinite(n) && n > 0 ? n : null;
+    };
+
+    return {
+      products: rows
+        .map((r) => ({
+          name: str(r.name, 200),
+          price: numOrNull(r.price),
+          sale_price: numOrNull(r.sale_price),
+          description: str(r.description, 1500),
+          brand: str(r.brand, 120),
+          collection: str(r.collection, 120),
+          category: str(r.category, 120),
+          stock: numOrNull(r.stock),
+          movement: str(r.movement, 120),
+          case_material: str(r.case_material, 120),
+          strap: str(r.strap, 120),
+          water_resistance: str(r.water_resistance, 120),
+          colors: arr(r.colors),
+          sizes: arr(r.sizes),
+          features: arr(r.features),
+          image_url: str(r.image_url, 1000),
+        }))
+        .filter((r) => r.name.length > 1)
+        .slice(0, 300),
+    };
+  });

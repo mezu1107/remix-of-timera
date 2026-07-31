@@ -69,6 +69,7 @@ export type Category = {
 
 export type Deal = {
   id: string;
+  slug: string;
   title: string;
   subtitle: string | null;
   description: string | null;
@@ -317,6 +318,7 @@ export const dealsQuery = queryOptions({
     return (data ?? [])
       .map((r: any) => ({
         id: r.id,
+        slug: r.slug ?? r.id,
         title: r.title,
         subtitle: r.subtitle,
         description: r.description,
@@ -521,3 +523,29 @@ export const paymentSettingsQuery = queryOptions({
   },
 });
 
+
+export type Faq = {
+  id: string;
+  question: string;
+  answer: string;
+  category: string | null;
+};
+
+export const faqsQuery = queryOptions({
+  queryKey: ["faqs"],
+  staleTime: 60_000,
+  queryFn: async (): Promise<Faq[]> => {
+    const { data, error } = await supabase
+      .from("faqs" as any)
+      .select("id,question,answer,category,sort_order")
+      .eq("active", true)
+      .order("sort_order", { ascending: true });
+    if (error) throw error;
+    return (data ?? []).map((r: any) => ({
+      id: r.id,
+      question: r.question,
+      answer: r.answer,
+      category: r.category ?? null,
+    }));
+  },
+});

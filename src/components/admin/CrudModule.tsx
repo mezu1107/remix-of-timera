@@ -54,7 +54,8 @@ export type AdminTable =
   | "popups"
   | "coupons"
   | "reviews"
-  | "trust_sections";
+  | "trust_sections"
+  | "faqs";
 
 type Props = {
   table: AdminTable;

@@ -23,6 +23,7 @@ import {
   ShieldCheck,
   Wallet,
   Settings,
+  HelpCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -48,6 +49,7 @@ const links = [
   { to: "/admin/popups", label: "Popups", icon: Megaphone },
   { to: "/admin/reviews", label: "Reviews", icon: MessageSquareQuote },
   { to: "/admin/blog", label: "Journal", icon: Newspaper },
+  { to: "/admin/faqs", label: "FAQs", icon: HelpCircle },
   { to: "/admin/orders", label: "Orders", icon: Package },
   { to: "/admin/payments", label: "Payments & Delivery", icon: Wallet },
   { to: "/admin/trust", label: "Trust Centre", icon: ShieldCheck },

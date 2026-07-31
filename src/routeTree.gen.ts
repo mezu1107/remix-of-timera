@@ -24,9 +24,13 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DealsIndexRouteImport } from './routes/deals.index'
+import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as PoliciesSlugRouteImport } from './routes/policies.$slug'
+import { Route as DealsSlugRouteImport } from './routes/deals.$slug'
+import { Route as CollectionsSlugRouteImport } from './routes/collections.$slug'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AdminTrustRouteImport } from './routes/admin.trust'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
@@ -36,6 +40,7 @@ import { Route as AdminPopupsRouteImport } from './routes/admin.popups'
 import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminHeroRouteImport } from './routes/admin.hero'
+import { Route as AdminFaqsRouteImport } from './routes/admin.faqs'
 import { Route as AdminDealsRouteImport } from './routes/admin.deals'
 import { Route as AdminCouponsRouteImport } from './routes/admin.coupons'
 import { Route as AdminCollectionsRouteImport } from './routes/admin.collections'
@@ -142,6 +147,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DealsIndexRoute = DealsIndexRouteImport.update({
+  id: '/deals/',
+  path: '/deals/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
+  id: '/collections/',
+  path: '/collections/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -155,6 +170,16 @@ const ProductSlugRoute = ProductSlugRouteImport.update({
 const PoliciesSlugRoute = PoliciesSlugRouteImport.update({
   id: '/policies/$slug',
   path: '/policies/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DealsSlugRoute = DealsSlugRouteImport.update({
+  id: '/deals/$slug',
+  path: '/deals/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionsSlugRoute = CollectionsSlugRouteImport.update({
+  id: '/collections/$slug',
+  path: '/collections/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
@@ -200,6 +225,11 @@ const AdminOrdersRoute = AdminOrdersRouteImport.update({
 const AdminHeroRoute = AdminHeroRouteImport.update({
   id: '/hero',
   path: '/hero',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFaqsRoute = AdminFaqsRouteImport.update({
+  id: '/faqs',
+  path: '/faqs',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminDealsRoute = AdminDealsRouteImport.update({
@@ -379,6 +409,7 @@ export interface FileRoutesByFullPath {
   '/admin/collections': typeof AdminCollectionsRoute
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/deals': typeof AdminDealsRoute
+  '/admin/faqs': typeof AdminFaqsRoute
   '/admin/hero': typeof AdminHeroRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payments': typeof AdminPaymentsRoute
@@ -388,9 +419,13 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/trust': typeof AdminTrustRoute
   '/api/chat': typeof ApiChatRoute
+  '/collections/$slug': typeof CollectionsSlugRoute
+  '/deals/$slug': typeof DealsSlugRoute
   '/policies/$slug': typeof PoliciesSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/collections/': typeof CollectionsIndexRoute
+  '/deals/': typeof DealsIndexRoute
   '/api/public/v1/categories': typeof ApiPublicV1CategoriesRoute
   '/api/public/v1/collections': typeof ApiPublicV1CollectionsRoute
   '/api/public/v1/deals': typeof ApiPublicV1DealsRoute
@@ -437,6 +472,7 @@ export interface FileRoutesByTo {
   '/admin/collections': typeof AdminCollectionsRoute
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/deals': typeof AdminDealsRoute
+  '/admin/faqs': typeof AdminFaqsRoute
   '/admin/hero': typeof AdminHeroRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payments': typeof AdminPaymentsRoute
@@ -446,9 +482,13 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/trust': typeof AdminTrustRoute
   '/api/chat': typeof ApiChatRoute
+  '/collections/$slug': typeof CollectionsSlugRoute
+  '/deals/$slug': typeof DealsSlugRoute
   '/policies/$slug': typeof PoliciesSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/collections': typeof CollectionsIndexRoute
+  '/deals': typeof DealsIndexRoute
   '/api/public/v1/categories': typeof ApiPublicV1CategoriesRoute
   '/api/public/v1/collections': typeof ApiPublicV1CollectionsRoute
   '/api/public/v1/deals': typeof ApiPublicV1DealsRoute
@@ -497,6 +537,7 @@ export interface FileRoutesById {
   '/admin/collections': typeof AdminCollectionsRoute
   '/admin/coupons': typeof AdminCouponsRoute
   '/admin/deals': typeof AdminDealsRoute
+  '/admin/faqs': typeof AdminFaqsRoute
   '/admin/hero': typeof AdminHeroRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/payments': typeof AdminPaymentsRoute
@@ -506,9 +547,13 @@ export interface FileRoutesById {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/trust': typeof AdminTrustRoute
   '/api/chat': typeof ApiChatRoute
+  '/collections/$slug': typeof CollectionsSlugRoute
+  '/deals/$slug': typeof DealsSlugRoute
   '/policies/$slug': typeof PoliciesSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/collections/': typeof CollectionsIndexRoute
+  '/deals/': typeof DealsIndexRoute
   '/api/public/v1/categories': typeof ApiPublicV1CategoriesRoute
   '/api/public/v1/collections': typeof ApiPublicV1CollectionsRoute
   '/api/public/v1/deals': typeof ApiPublicV1DealsRoute
@@ -558,6 +603,7 @@ export interface FileRouteTypes {
     | '/admin/collections'
     | '/admin/coupons'
     | '/admin/deals'
+    | '/admin/faqs'
     | '/admin/hero'
     | '/admin/orders'
     | '/admin/payments'
@@ -567,9 +613,13 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/trust'
     | '/api/chat'
+    | '/collections/$slug'
+    | '/deals/$slug'
     | '/policies/$slug'
     | '/product/$slug'
     | '/admin/'
+    | '/collections/'
+    | '/deals/'
     | '/api/public/v1/categories'
     | '/api/public/v1/collections'
     | '/api/public/v1/deals'
@@ -616,6 +666,7 @@ export interface FileRouteTypes {
     | '/admin/collections'
     | '/admin/coupons'
     | '/admin/deals'
+    | '/admin/faqs'
     | '/admin/hero'
     | '/admin/orders'
     | '/admin/payments'
@@ -625,9 +676,13 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/trust'
     | '/api/chat'
+    | '/collections/$slug'
+    | '/deals/$slug'
     | '/policies/$slug'
     | '/product/$slug'
     | '/admin'
+    | '/collections'
+    | '/deals'
     | '/api/public/v1/categories'
     | '/api/public/v1/collections'
     | '/api/public/v1/deals'
@@ -675,6 +730,7 @@ export interface FileRouteTypes {
     | '/admin/collections'
     | '/admin/coupons'
     | '/admin/deals'
+    | '/admin/faqs'
     | '/admin/hero'
     | '/admin/orders'
     | '/admin/payments'
@@ -684,9 +740,13 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/trust'
     | '/api/chat'
+    | '/collections/$slug'
+    | '/deals/$slug'
     | '/policies/$slug'
     | '/product/$slug'
     | '/admin/'
+    | '/collections/'
+    | '/deals/'
     | '/api/public/v1/categories'
     | '/api/public/v1/collections'
     | '/api/public/v1/deals'
@@ -731,8 +791,12 @@ export interface RootRouteChildren {
   TrustRoute: typeof TrustRoute
   WishlistRoute: typeof WishlistRoute
   ApiChatRoute: typeof ApiChatRoute
+  CollectionsSlugRoute: typeof CollectionsSlugRoute
+  DealsSlugRoute: typeof DealsSlugRoute
   PoliciesSlugRoute: typeof PoliciesSlugRoute
   ProductSlugRoute: typeof ProductSlugRoute
+  CollectionsIndexRoute: typeof CollectionsIndexRoute
+  DealsIndexRoute: typeof DealsIndexRoute
   ApiPublicV1CategoriesRoute: typeof ApiPublicV1CategoriesRoute
   ApiPublicV1CollectionsRoute: typeof ApiPublicV1CollectionsRoute
   ApiPublicV1DealsRoute: typeof ApiPublicV1DealsRoute
@@ -867,6 +931,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/deals/': {
+      id: '/deals/'
+      path: '/deals'
+      fullPath: '/deals/'
+      preLoaderRoute: typeof DealsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/': {
+      id: '/collections/'
+      path: '/collections'
+      fullPath: '/collections/'
+      preLoaderRoute: typeof CollectionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/': {
       id: '/admin/'
       path: '/'
@@ -886,6 +964,20 @@ declare module '@tanstack/react-router' {
       path: '/policies/$slug'
       fullPath: '/policies/$slug'
       preLoaderRoute: typeof PoliciesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/deals/$slug': {
+      id: '/deals/$slug'
+      path: '/deals/$slug'
+      fullPath: '/deals/$slug'
+      preLoaderRoute: typeof DealsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections/$slug': {
+      id: '/collections/$slug'
+      path: '/collections/$slug'
+      fullPath: '/collections/$slug'
+      preLoaderRoute: typeof CollectionsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
@@ -949,6 +1041,13 @@ declare module '@tanstack/react-router' {
       path: '/hero'
       fullPath: '/admin/hero'
       preLoaderRoute: typeof AdminHeroRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/faqs': {
+      id: '/admin/faqs'
+      path: '/faqs'
+      fullPath: '/admin/faqs'
+      preLoaderRoute: typeof AdminFaqsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/deals': {
@@ -1170,6 +1269,7 @@ interface AdminRouteChildren {
   AdminCollectionsRoute: typeof AdminCollectionsRoute
   AdminCouponsRoute: typeof AdminCouponsRoute
   AdminDealsRoute: typeof AdminDealsRoute
+  AdminFaqsRoute: typeof AdminFaqsRoute
   AdminHeroRoute: typeof AdminHeroRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPaymentsRoute: typeof AdminPaymentsRoute
@@ -1187,6 +1287,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCollectionsRoute: AdminCollectionsRoute,
   AdminCouponsRoute: AdminCouponsRoute,
   AdminDealsRoute: AdminDealsRoute,
+  AdminFaqsRoute: AdminFaqsRoute,
   AdminHeroRoute: AdminHeroRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminPaymentsRoute: AdminPaymentsRoute,
@@ -1217,8 +1318,12 @@ const rootRouteChildren: RootRouteChildren = {
   TrustRoute: TrustRoute,
   WishlistRoute: WishlistRoute,
   ApiChatRoute: ApiChatRoute,
+  CollectionsSlugRoute: CollectionsSlugRoute,
+  DealsSlugRoute: DealsSlugRoute,
   PoliciesSlugRoute: PoliciesSlugRoute,
   ProductSlugRoute: ProductSlugRoute,
+  CollectionsIndexRoute: CollectionsIndexRoute,
+  DealsIndexRoute: DealsIndexRoute,
   ApiPublicV1CategoriesRoute: ApiPublicV1CategoriesRoute,
   ApiPublicV1CollectionsRoute: ApiPublicV1CollectionsRoute,
   ApiPublicV1DealsRoute: ApiPublicV1DealsRoute,
