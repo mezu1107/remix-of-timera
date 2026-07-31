@@ -998,7 +998,8 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      slugify: { Args: { _input: string }; Returns: string }
+      unaccent_fallback: { Args: { _input: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "staff" | "user"
