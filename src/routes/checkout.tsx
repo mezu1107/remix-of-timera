@@ -93,42 +93,41 @@ function CheckoutPage() {
     mutationFn: async (form: HTMLFormElement) => {
       const fd = new FormData(form);
       const get = (k: string) => String(fd.get(k) ?? "").trim();
-      const orderNumber = `TMR-${Date.now().toString(36).toUpperCase()}`;
       const address = [get("address"), get("city"), get("zip"), get("country")].filter(Boolean).join(", ");
 
       const methodLabel = methods.find((m) => m.id === payMethod)?.label ?? "Cash on Delivery";
       const { data: sessionData } = await supabase.auth.getSession();
-      const payload = {
-        user_id: sessionData.session?.user?.id ?? null,
-        order_number: orderNumber,
+      const token = sessionData.session?.access_token;
 
-        customer_name: `${get("first")} ${get("last")}`.trim(),
-        customer_email: get("email"),
-        customer_phone: get("phone") || null,
-        shipping_address: address,
-        items: items.map((i) => ({
-          product_id: i.product.id,
-          slug: i.product.slug,
-          name: i.product.name,
-          image: i.product.image,
-          unit_price: i.product.salePrice ?? i.product.price,
-          quantity: i.quantity,
-          color: i.color ?? null,
-          size: i.size ?? null,
-        })),
-        subtotal,
-        discount,
-        shipping: shipping + codExtra,
-        total,
-        coupon_code: appliedCode,
-        status: "pending",
-        notes: [get("notes"), `Payment: ${methodLabel}`].filter(Boolean).join(" — "),
-      };
+      // Server recomputes prices, discount and shipping from the database.
+      const res = await fetch("/api/public/v1/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          customer_name: `${get("first")} ${get("last")}`.trim(),
+          customer_email: get("email"),
+          customer_phone: get("phone") || null,
+          shipping_address: address,
+          notes: [get("notes"), `Payment: ${methodLabel}`].filter(Boolean).join(" — "),
+          coupon_code: appliedCode,
+          items: items.map((i) => ({
+            product_id: i.product.id,
+            slug: i.product.slug,
+            quantity: i.quantity,
+            color: i.color ?? null,
+            size: i.size ?? null,
+          })),
+        }),
+      });
 
-      const { error } = await supabase.from("orders").insert(payload as any);
-      if (error) throw error;
-      return { orderNumber, email: payload.customer_email };
+      const out = await res.json().catch(() => ({}) as any);
+      if (!res.ok || !out?.ok) throw new Error(out?.error ?? "We couldn't save your order. Please try again.");
+      return { orderNumber: out.order?.order_number as string, email: get("email") };
     },
+
     onSuccess: (r) => {
       void trackEvent("purchase", {
         orderNumber: r.orderNumber,
