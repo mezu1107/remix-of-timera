@@ -241,7 +241,7 @@ function HomePage() {
 
       {/* COLLECTIONS */}
       <section className="container-luxe py-16 sm:py-24">
-        <SectionHeading eyebrow="Curated" title="Signature Collections" href="/shop" />
+        <SectionHeading eyebrow="Curated" title="Signature Collections" href="/collections" />
         <div className="mt-10 grid gap-4 sm:mt-14 md:grid-cols-2 lg:grid-cols-3">
           {collectionsList.map((c, i) => (
             <motion.div
@@ -251,7 +251,7 @@ function HomePage() {
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: i * 0.08 }}
             >
-              <Link to="/shop" className="group relative block aspect-[4/5] overflow-hidden rounded-lg bg-card">
+              <Link to="/collections/$slug" params={{ slug: c.slug }} className="group relative block aspect-[4/5] overflow-hidden rounded-lg bg-card">
                 {c.image && (
                   <img src={c.image} alt={c.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-[1500ms] group-hover:scale-110" />
                 )}
