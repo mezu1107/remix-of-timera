@@ -19,6 +19,7 @@ export type SiteSettings = {
   contactPhone: string | null;
   whatsappNumber: string | null;
   address: string | null;
+  contactHours: string | null;
   instagramUrl: string | null;
   facebookUrl: string | null;
   tiktokUrl: string | null;
@@ -68,6 +69,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   contactPhone: null,
   whatsappNumber: null,
   address: null,
+  contactHours: null,
   instagramUrl: null,
   facebookUrl: null,
   tiktokUrl: null,
@@ -105,6 +107,7 @@ export function mapSiteSettings(r: Record<string, any> | null | undefined): Site
     contactPhone: r.contact_phone ?? null,
     whatsappNumber: r.whatsapp_number ?? null,
     address: r.address ?? null,
+    contactHours: r.contact_hours ?? null,
     instagramUrl: r.instagram_url ?? null,
     facebookUrl: r.facebook_url ?? null,
     tiktokUrl: r.tiktok_url ?? null,

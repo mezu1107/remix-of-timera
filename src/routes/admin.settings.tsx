@@ -89,6 +89,7 @@ function SettingsAdmin() {
         contact_phone: f.contact_phone || null,
         whatsapp_number: f.whatsapp_number || null,
         address: f.address || null,
+        contact_hours: f.contact_hours || null,
         instagram_url: f.instagram_url || null,
         facebook_url: f.facebook_url || null,
         tiktok_url: f.tiktok_url || null,
@@ -181,6 +182,9 @@ function SettingsAdmin() {
             <Input value={f.whatsapp_number ?? ""} onChange={(e) => set("whatsapp_number", e.target.value)} />
           </Field>
           <Field label="Address"><Input value={f.address ?? ""} onChange={(e) => set("address", e.target.value)} /></Field>
+          <Field label="Opening hours" help="Shown on the contact page, e.g. Mon–Sun · 10:00–22:00 PKT">
+            <Input value={f.contact_hours ?? ""} onChange={(e) => set("contact_hours", e.target.value)} />
+          </Field>
           <Field label="Instagram URL"><Input value={f.instagram_url ?? ""} onChange={(e) => set("instagram_url", e.target.value)} /></Field>
           <Field label="Facebook URL"><Input value={f.facebook_url ?? ""} onChange={(e) => set("facebook_url", e.target.value)} /></Field>
           <Field label="TikTok URL"><Input value={f.tiktok_url ?? ""} onChange={(e) => set("tiktok_url", e.target.value)} /></Field>

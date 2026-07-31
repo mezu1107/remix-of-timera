@@ -45,9 +45,9 @@ export function Header() {
   const Brand = (
     <>
       {settings?.logoUrl ? (
-        <img src={settings.logoUrl} alt={brand} className="h-8 w-auto max-w-[150px] object-contain" />
+        <img src={settings.logoUrl} alt={brand} className="h-10 w-auto max-w-[190px] object-contain sm:h-12" />
       ) : (
-        <span className="font-serif text-xl tracking-tight gold-text sm:text-2xl">{brand}</span>
+        <span className="font-serif text-2xl font-semibold tracking-tight gold-text sm:text-3xl lg:text-4xl">{brand}</span>
       )}
       {settings?.brandSuffix && (
         <span className="hidden sm:inline text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
