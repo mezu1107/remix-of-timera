@@ -28,6 +28,7 @@ import { Route as DealsIndexRouteImport } from './routes/deals.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as PoliciesSlugRouteImport } from './routes/policies.$slug'
+import { Route as DealsSlugRouteImport } from './routes/deals.$slug'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AdminTrustRouteImport } from './routes/admin.trust'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
@@ -161,6 +162,11 @@ const ProductSlugRoute = ProductSlugRouteImport.update({
 const PoliciesSlugRoute = PoliciesSlugRouteImport.update({
   id: '/policies/$slug',
   path: '/policies/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DealsSlugRoute = DealsSlugRouteImport.update({
+  id: '/deals/$slug',
+  path: '/deals/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
@@ -394,6 +400,7 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/trust': typeof AdminTrustRoute
   '/api/chat': typeof ApiChatRoute
+  '/deals/$slug': typeof DealsSlugRoute
   '/policies/$slug': typeof PoliciesSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -453,6 +460,7 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/trust': typeof AdminTrustRoute
   '/api/chat': typeof ApiChatRoute
+  '/deals/$slug': typeof DealsSlugRoute
   '/policies/$slug': typeof PoliciesSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin': typeof AdminIndexRoute
@@ -514,6 +522,7 @@ export interface FileRoutesById {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/trust': typeof AdminTrustRoute
   '/api/chat': typeof ApiChatRoute
+  '/deals/$slug': typeof DealsSlugRoute
   '/policies/$slug': typeof PoliciesSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -576,6 +585,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/trust'
     | '/api/chat'
+    | '/deals/$slug'
     | '/policies/$slug'
     | '/product/$slug'
     | '/admin/'
@@ -635,6 +645,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/trust'
     | '/api/chat'
+    | '/deals/$slug'
     | '/policies/$slug'
     | '/product/$slug'
     | '/admin'
@@ -695,6 +706,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/trust'
     | '/api/chat'
+    | '/deals/$slug'
     | '/policies/$slug'
     | '/product/$slug'
     | '/admin/'
@@ -743,6 +755,7 @@ export interface RootRouteChildren {
   TrustRoute: typeof TrustRoute
   WishlistRoute: typeof WishlistRoute
   ApiChatRoute: typeof ApiChatRoute
+  DealsSlugRoute: typeof DealsSlugRoute
   PoliciesSlugRoute: typeof PoliciesSlugRoute
   ProductSlugRoute: typeof ProductSlugRoute
   DealsIndexRoute: typeof DealsIndexRoute
@@ -906,6 +919,13 @@ declare module '@tanstack/react-router' {
       path: '/policies/$slug'
       fullPath: '/policies/$slug'
       preLoaderRoute: typeof PoliciesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/deals/$slug': {
+      id: '/deals/$slug'
+      path: '/deals/$slug'
+      fullPath: '/deals/$slug'
+      preLoaderRoute: typeof DealsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
@@ -1237,6 +1257,7 @@ const rootRouteChildren: RootRouteChildren = {
   TrustRoute: TrustRoute,
   WishlistRoute: WishlistRoute,
   ApiChatRoute: ApiChatRoute,
+  DealsSlugRoute: DealsSlugRoute,
   PoliciesSlugRoute: PoliciesSlugRoute,
   ProductSlugRoute: ProductSlugRoute,
   DealsIndexRoute: DealsIndexRoute,
