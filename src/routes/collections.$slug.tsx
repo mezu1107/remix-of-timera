@@ -24,13 +24,14 @@ export const Route = createFileRoute("/collections/$slug")({
 
 function CollectionDetail() {
   const { slug } = Route.useParams();
-  const { data: collections = [], isLoading } = useQuery(collectionsQuery);
-  const { data: products = [] } = useQuery(productsQuery);
+  const { data: collections = [], isLoading, isError } = useQuery(collectionsQuery);
+  const { data: products = [], isLoading: productsLoading } = useQuery(productsQuery);
+  const slugify = (v: string) => v.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
-  const collection = collections.find((c) => c.slug === slug);
-  const items = collection ? products.filter((p) => p.collection === collection.name) : [];
+  const collection = collections.find((c) => (c.slug ?? slugify(c.name)) === slug || slugify(c.name) === slug);
+  const items = collection ? products.filter((p) => slugify(p.collection ?? "") === slugify(collection.name)) : [];
 
-  if (isLoading) return <div className="container-luxe py-24 text-muted-foreground">Loading collection…</div>;
+  if (isLoading && !isError) return <div className="container-luxe py-24 text-muted-foreground">Loading collection…</div>;
 
   if (!collection)
     return (
@@ -62,7 +63,7 @@ function CollectionDetail() {
       </div>
 
       {items.length === 0 ? (
-        <p className="mt-16 text-muted-foreground">No products in this collection yet.</p>
+        <p className="mt-16 text-muted-foreground">{productsLoading ? "Loading pieces…" : "No products in this collection yet."}</p>
       ) : (
         <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-12 lg:grid-cols-4">
           {items.map((p, i) => (
