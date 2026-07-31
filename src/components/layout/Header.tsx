@@ -11,6 +11,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 const defaultNav = [
   { label: "Shop", href: "/shop" },
+  { label: "Collections", href: "/collections" },
+  { label: "Deals", href: "/deals" },
   { label: "Journal", href: "/blog" },
   { label: "Atelier", href: "/about" },
   { label: "Contact", href: "/contact" },
