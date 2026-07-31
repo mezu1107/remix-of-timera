@@ -1,4 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
+import { initMetaPixel, metaTrack, metaTrackCustom, type MetaStandardEvent } from "@/lib/pixels/meta-pixel";
+import { googleAdsConversion, googleTrack, initGooglePixel } from "@/lib/pixels/google-pixel";
 
 export type TrackingEventName =
   | "page_view"
@@ -27,19 +29,6 @@ export type TrackingEventName =
   | "filter_apply"
   | "sort_change";
 
-type GtagFn = (...args: unknown[]) => void;
-type FbqFn = ((...args: unknown[]) => void) & { queue?: unknown[]; loaded?: boolean; version?: string };
-
-declare global {
-  interface Window {
-    dataLayer?: unknown[];
-    gtag?: GtagFn;
-    fbq?: FbqFn;
-    _fbq?: FbqFn;
-    __timeraTracking?: { googleTagId?: string; googleAdsPurchaseLabel?: string };
-  }
-}
-
 export type TrackingPayload = {
   pagePath?: string;
   referrer?: string;
@@ -52,32 +41,33 @@ export type TrackingPayload = {
   metadata?: Record<string, unknown>;
 };
 
-const metaEventName: Record<TrackingEventName, string> = {
+/** Standard Meta event per app event; `null` means send it as a custom event. */
+const metaEventName: Record<TrackingEventName, MetaStandardEvent | null> = {
   page_view: "PageView",
   view_item: "ViewContent",
   view_item_list: "ViewContent",
   add_to_cart: "AddToCart",
-  remove_from_cart: "CustomEvent",
+  remove_from_cart: null,
   begin_checkout: "InitiateCheckout",
   add_payment_info: "AddPaymentInfo",
   purchase: "Purchase",
   search: "Search",
   view_cart: "ViewContent",
   add_to_wishlist: "AddToWishlist",
-  share: "CustomEvent",
+  share: null,
   sign_up: "CompleteRegistration",
-  login: "CustomEvent",
+  login: null,
   contact: "Contact",
   whatsapp_click: "Contact",
-  scroll_depth: "CustomEvent",
-  time_on_page: "CustomEvent",
-  outbound_click: "CustomEvent",
-  video_play: "CustomEvent",
+  scroll_depth: null,
+  time_on_page: null,
+  outbound_click: null,
+  video_play: null,
   newsletter_signup: "Subscribe",
-  coupon_applied: "CustomEvent",
+  coupon_applied: null,
   quick_view: "ViewContent",
-  filter_apply: "CustomEvent",
-  sort_change: "CustomEvent",
+  filter_apply: null,
+  sort_change: null,
 };
 
 const googleEventName: Record<TrackingEventName, string> = {
@@ -108,51 +98,39 @@ const googleEventName: Record<TrackingEventName, string> = {
   sort_change: "sort",
 };
 
-const initializedMeta = new Set<string>();
-const initializedGoogle = new Set<string>();
+/** Kept for backwards compatibility with existing imports. */
+export { initMetaPixel };
+export const initGoogleTag = initGooglePixel;
 
-function cleanId(value: string | null | undefined) {
-  return String(value ?? "").trim();
-}
+function fireBrowserPixels(name: TrackingEventName, payload: TrackingPayload) {
+  const value = Number(payload.value ?? 0) || undefined;
+  const currency = payload.currency ?? "PKR";
 
-function loadScript(id: string, src: string) {
-  if (typeof document === "undefined" || document.getElementById(id)) return;
-  const script = document.createElement("script");
-  script.id = id;
-  script.async = true;
-  script.src = src;
-  document.head.appendChild(script);
-}
+  const metaParams = {
+    content_ids: payload.productId ? [payload.productId] : undefined,
+    content_name: payload.productName,
+    content_type: payload.productId ? "product" : undefined,
+    value,
+    currency,
+    ...(payload.metadata ?? {}),
+  };
+  const standard = metaEventName[name];
+  if (standard) metaTrack(standard, metaParams);
+  else metaTrackCustom(name, metaParams);
 
-export function initMetaPixel(pixelId: string | null | undefined) {
-  if (typeof window === "undefined") return;
-  const id = cleanId(pixelId);
-  if (!id || initializedMeta.has(id)) return;
-  if (!window.fbq) {
-    const fbq: FbqFn = (...args: unknown[]) => fbq.queue?.push(args);
-    fbq.queue = [];
-    fbq.loaded = true;
-    fbq.version = "2.0";
-    window.fbq = fbq;
-    window._fbq = fbq;
+  googleTrack(googleEventName[name], {
+    page_path: payload.pagePath ?? window.location.pathname,
+    currency,
+    value,
+    transaction_id: payload.orderNumber,
+    items: payload.metadata?.items,
+    item_id: payload.productId,
+    item_name: payload.productName,
+  });
+
+  if (name === "purchase") {
+    googleAdsConversion({ value, currency, transactionId: payload.orderNumber });
   }
-  window.fbq("init", id);
-  initializedMeta.add(id);
-  loadScript("timera-meta-pixel", "https://connect.facebook.net/en_US/fbevents.js");
-}
-
-export function initGoogleTag(tagId: string | null | undefined, purchaseLabel?: string | null) {
-  if (typeof window === "undefined") return;
-  const id = cleanId(tagId);
-  if (!id) return;
-  window.dataLayer = window.dataLayer ?? [];
-  window.gtag = window.gtag ?? ((...args: unknown[]) => window.dataLayer?.push(args));
-  window.__timeraTracking = { googleTagId: id, googleAdsPurchaseLabel: cleanId(purchaseLabel) };
-  if (initializedGoogle.has(id)) return;
-  loadScript("timera-google-tag", `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`);
-  window.gtag("js", new Date());
-  window.gtag("config", id, { send_page_view: false });
-  initializedGoogle.add(id);
 }
 
 function getSessionId() {
@@ -162,36 +140,6 @@ function getSessionId() {
   const random = window.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   window.sessionStorage.setItem(key, random);
   return random;
-}
-
-function fireBrowserPixels(name: TrackingEventName, payload: TrackingPayload) {
-  const value = Number(payload.value ?? 0) || undefined;
-  const currency = payload.currency ?? "PKR";
-  window.fbq?.("track", metaEventName[name], {
-    content_ids: payload.productId ? [payload.productId] : undefined,
-    content_name: payload.productName,
-    content_type: payload.productId ? "product" : undefined,
-    value,
-    currency,
-  });
-  window.gtag?.("event", googleEventName[name], {
-    page_path: payload.pagePath ?? window.location.pathname,
-    currency,
-    value,
-    transaction_id: payload.orderNumber,
-    items: payload.metadata?.items,
-    item_id: payload.productId,
-    item_name: payload.productName,
-  });
-  const cfg = window.__timeraTracking;
-  if (name === "purchase" && cfg?.googleTagId && cfg.googleAdsPurchaseLabel) {
-    window.gtag?.("event", "conversion", {
-      send_to: `${cfg.googleTagId}/${cfg.googleAdsPurchaseLabel}`,
-      value,
-      currency,
-      transaction_id: payload.orderNumber,
-    });
-  }
 }
 
 export async function trackEvent(name: TrackingEventName, payload: TrackingPayload = {}) {
