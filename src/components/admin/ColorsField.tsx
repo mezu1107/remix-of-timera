@@ -43,11 +43,26 @@ export function ColorsField({
   onChange: (v: string) => void;
   productSlug?: string;
 }) {
-  const rows = useMemo(() => parseColorsText(value), [value]);
-  const setRows = (next: ColorRow[]) => onChange(serializeColors(next));
+  // Rows live in local state so a brand-new empty row stays visible until it is named.
+  const [rows, setRows] = useState<ColorRow[]>(() => parseColorsText(value));
+  const lastPushed = useRef(value);
+
+  useEffect(() => {
+    if (value !== lastPushed.current) {
+      lastPushed.current = value;
+      setRows(parseColorsText(value));
+    }
+  }, [value]);
+
+  const commit = (next: ColorRow[]) => {
+    setRows(next);
+    const serialized = serializeColors(next);
+    lastPushed.current = serialized;
+    onChange(serialized);
+  };
 
   const update = (i: number, patch: Partial<ColorRow>) =>
-    setRows(rows.map((r, idx) => (idx === i ? { ...r, ...patch } : r)));
+    commit(rows.map((r, idx) => (idx === i ? { ...r, ...patch } : r)));
 
   return (
     <div className="mt-1.5 space-y-3">
