@@ -134,7 +134,7 @@ function ShopPage() {
         <p className="text-[11px] uppercase tracking-[0.3em] text-primary">The Collection</p>
         <h1 className="mt-3 font-serif text-5xl md:text-6xl">All Timepieces</h1>
         <p className="mt-4 text-muted-foreground max-w-2xl">
-          Every watch in the Timera maison — hand-assembled in Neuchâtel, delivered with a signed authenticity dossier and complimentary insured shipping.
+          Every Timera watch — precision quartz movement, quality-checked in-house, delivered with a signed authenticity card, warranty and insured delivery across Pakistan.
         </p>
       </div>
 

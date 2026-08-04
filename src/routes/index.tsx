@@ -323,7 +323,7 @@ function HomePage() {
       <section className="container-luxe py-16">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            { icon: Gem, title: "Quartz Precision", desc: "Assembled by hand in Neuchâtel" },
+            { icon: Gem, title: "Quartz Precision", desc: "Japanese quartz movements, accurate to seconds a month" },
             { icon: Shield, title: "5-Year Warranty", desc: "International movement guarantee" },
             { icon: Globe2, title: "Insured Shipping", desc: "Signature-required, worldwide" },
             { icon: Sparkles, title: "White-Glove Returns", desc: "30 days, complimentary" },
