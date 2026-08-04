@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
-import { couponsQuery, effectivePrice, listPrice, paymentSettingsQuery } from "@/lib/catalog";
+import { couponsQuery, effectivePrice, paymentSettingsQuery } from "@/lib/catalog";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({

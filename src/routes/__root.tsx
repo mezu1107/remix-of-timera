@@ -16,6 +16,7 @@ import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { CartDrawer } from "@/components/layout/CartDrawer";
 import { PromoPopup } from "@/components/PromoPopup";
 import { AiAssistant } from "@/components/AiAssistant";
+import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
 import { TrackingPixels } from "@/components/TrackingPixels";
 import { AutoTracker } from "@/components/AutoTracker";
 import { Toaster } from "@/components/ui/sonner";
@@ -162,6 +163,7 @@ function RootComponent() {
         <TrackingPixels />
         <AutoTracker />
         <AiAssistant />
+        <FloatingWhatsApp />
 
 
         <Toaster position="bottom-right" theme="light" />
