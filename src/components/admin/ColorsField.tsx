@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,11 +43,26 @@ export function ColorsField({
   onChange: (v: string) => void;
   productSlug?: string;
 }) {
-  const rows = useMemo(() => parseColorsText(value), [value]);
-  const setRows = (next: ColorRow[]) => onChange(serializeColors(next));
+  // Rows live in local state so a brand-new empty row stays visible until it is named.
+  const [rows, setRows] = useState<ColorRow[]>(() => parseColorsText(value));
+  const lastPushed = useRef(value);
+
+  useEffect(() => {
+    if (value !== lastPushed.current) {
+      lastPushed.current = value;
+      setRows(parseColorsText(value));
+    }
+  }, [value]);
+
+  const commit = (next: ColorRow[]) => {
+    setRows(next);
+    const serialized = serializeColors(next);
+    lastPushed.current = serialized;
+    onChange(serialized);
+  };
 
   const update = (i: number, patch: Partial<ColorRow>) =>
-    setRows(rows.map((r, idx) => (idx === i ? { ...r, ...patch } : r)));
+    commit(rows.map((r, idx) => (idx === i ? { ...r, ...patch } : r)));
 
   return (
     <div className="mt-1.5 space-y-3">
@@ -95,7 +110,7 @@ export function ColorsField({
               variant="ghost"
               size="icon"
               aria-label="Remove colour"
-              onClick={() => setRows(rows.filter((_, idx) => idx !== i))}
+              onClick={() => commit(rows.filter((_, idx) => idx !== i))}
             >
               <Trash2 className="h-4 w-4 text-destructive" />
             </Button>
@@ -114,7 +129,7 @@ export function ColorsField({
         type="button"
         variant="outline"
         size="sm"
-        onClick={() => setRows([...rows, { name: "", hex: "#1a1a1a", image: "" }])}
+        onClick={() => commit([...rows, { name: "", hex: "#1a1a1a", image: "" }])}
       >
         <Plus className="mr-2 h-4 w-4" /> Add colour
       </Button>

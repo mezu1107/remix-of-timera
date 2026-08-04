@@ -45,6 +45,7 @@ function ProductsAdmin() {
       title="Products"
       description="Your catalogue. New and edited products appear in the shop instantly."
       orderBy={{ column: "sort_order" }}
+      bulkFieldKeys={["deal_id", "badge", "category", "collection", "sale_price", "stock", "featured", "active"]}
       invalidate={["products", "categories", "deals"]}
       aiAssist={{
         label: "Write this product with AI",
@@ -148,7 +149,7 @@ function ProductsAdmin() {
         },
         { section: "Variants", key: "sizes", label: "Sizes", type: "list", help: "One per line, e.g. 40mm" },
 
-        { section: "Specification", key: "movement", label: "Movement", type: "text", default: "Swiss Automatic" },
+        { section: "Specification", key: "movement", label: "Movement", type: "text", default: "Quartz" },
         { section: "Specification", key: "case_material", label: "Case material", type: "text", default: "Stainless Steel" },
         { section: "Specification", key: "strap", label: "Strap", type: "text", default: "Leather" },
         { section: "Specification", key: "water_resistance", label: "Water resistance", type: "text", default: "50m" },

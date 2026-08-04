@@ -6,6 +6,8 @@ import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, Tag } from "lucide-react"
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { couponsQuery, effectivePrice, paymentSettingsQuery } from "@/lib/catalog";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -21,12 +23,36 @@ export const Route = createFileRoute("/cart")({
 
 function CartPage() {
   const { items, updateQty, remove } = useCart();
+  const { data: coupons = [] } = useQuery(couponsQuery);
+  const { data: settings } = useQuery(paymentSettingsQuery);
   const [coupon, setCoupon] = useState("");
-  const [applied, setApplied] = useState<number>(0);
+  const [appliedCode, setAppliedCode] = useState<string | null>(null);
 
-  const subtotal = items.reduce((a, i) => a + i.product.price * i.quantity, 0);
-  const shipping = subtotal >= 500 || subtotal === 0 ? 0 : 45;
+  const subtotal = items.reduce((a, i) => a + effectivePrice(i.product) * i.quantity, 0);
+  const activeCoupon = coupons.find((c) => c.code.toLowerCase() === (appliedCode ?? "").toLowerCase()) ?? null;
+  const applied =
+    activeCoupon && subtotal >= activeCoupon.minOrder
+      ? Math.min(
+          activeCoupon.discountType === "percent"
+            ? Math.round(((subtotal * activeCoupon.discountValue) / 100) * 100) / 100
+            : activeCoupon.discountValue,
+          subtotal,
+        )
+      : 0;
+  const freeAbove = settings?.freeDeliveryAbove ?? 5000;
+  const shipping = items.length === 0 || subtotal - applied >= freeAbove ? 0 : (settings?.deliveryCharge ?? 250);
   const total = Math.max(0, subtotal + shipping - applied);
+
+  const applyCoupon = () => {
+    const code = coupon.trim();
+    if (!code) return;
+    const found = coupons.find((c) => c.code.toLowerCase() === code.toLowerCase());
+    if (!found) return toast.error("That code isn't valid.");
+    if (subtotal < found.minOrder) return toast.error(`This code needs a minimum order of ${formatPrice(found.minOrder)}.`);
+    setAppliedCode(found.code);
+    try { localStorage.setItem("timera.coupon", found.code); } catch { /* ignore */ }
+    toast.success(`Code ${found.code} applied.`);
+  };
 
   if (items.length === 0) {
     return (
@@ -77,7 +103,7 @@ function CartPage() {
                 <span className="w-10 text-center text-sm">{item.quantity}</span>
                 <button onClick={() => updateQty(item.id, item.quantity + 1)} className="p-2 hover:text-primary"><Plus className="h-3.5 w-3.5" /></button>
               </div>
-              <p className="font-medium md:w-28 md:text-right">{formatPrice(item.product.price * item.quantity)}</p>
+              <p className="font-medium md:w-28 md:text-right">{formatPrice(effectivePrice(item.product) * item.quantity)}</p>
               <button onClick={() => remove(item.id)} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>
             </div>
           ))}
@@ -93,16 +119,18 @@ function CartPage() {
             </div>
             <Button
               variant="outline"
-              onClick={() => {
-                if (coupon.toUpperCase() === "AUREUM10") { setApplied(subtotal * 0.1); toast.success("10% discount applied"); }
-                else toast.error("Invalid code");
-              }}
+              onClick={applyCoupon}
               className="h-11"
             >Apply</Button>
           </div>
 
           <div className="mt-6 space-y-2.5 text-sm border-t border-border/40 pt-6">
             <Row label="Subtotal" value={formatPrice(subtotal)} />
+            {coupons.length > 0 && !appliedCode && (
+              <p className="text-xs text-muted-foreground">
+                Available codes: {coupons.map((c) => c.code).join(", ")}
+              </p>
+            )}
             <Row label="Shipping" value={shipping === 0 ? "Complimentary" : formatPrice(shipping)} />
             {applied > 0 && <Row label="Discount" value={`- ${formatPrice(applied)}`} />}
             <div className="border-t border-border/40 pt-4 mt-4 flex justify-between font-serif text-xl">

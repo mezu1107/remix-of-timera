@@ -116,7 +116,7 @@ export const aiWriteProductCopy = createServerFn({ method: "POST" })
     const { text } = await generateText({
       model: gateway(CHAT_MODEL),
       system:
-        "You are a senior copywriter for a luxury Swiss watch maison. Write elegant, concrete, non-cliché copy. " +
+        "You are a senior copywriter for a luxury quartz watch house (Timera watches are all quartz movement, never Swiss-made). Write elegant, concrete, non-cliché copy. " +
         'Reply with strict JSON only: {"name":"","description":"","features":["",""],"seo_title":"","seo_description":"","seo_keywords":""}. ' +
         "description: 60-120 words, no bullet points. features: 4-6 short phrases. seo_title under 60 characters and includes the product name. " +
         "seo_description under 155 characters. seo_keywords: 5-8 comma separated phrases. Never invent certifications or awards.",

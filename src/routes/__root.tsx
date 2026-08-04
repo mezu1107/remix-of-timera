@@ -16,6 +16,7 @@ import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { CartDrawer } from "@/components/layout/CartDrawer";
 import { PromoPopup } from "@/components/PromoPopup";
 import { AiAssistant } from "@/components/AiAssistant";
+import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
 import { TrackingPixels } from "@/components/TrackingPixels";
 import { AutoTracker } from "@/components/AutoTracker";
 import { Toaster } from "@/components/ui/sonner";
@@ -84,21 +85,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Timera — Luxury Swiss Watches Online | timera.store" },
-      { name: "description", content: "Shop Timera luxury watches: Swiss automatic, chronograph, dress and dive timepieces. Free insured worldwide shipping, 5-year warranty, 30-day returns." },
-      { name: "keywords", content: "Timera, timera.store, luxury watches, Swiss watches, automatic watch, mechanical watch, chronograph, dive watch, dress watch, men's luxury watches, women's luxury watches, buy watches online" },
+      { title: "Timera — Luxury Quartz Watches Online | timera.store" },
+      { name: "description", content: "Shop Timera luxury watches: precision quartz, chronograph, dress and dive timepieces. Free insured worldwide shipping, 5-year warranty, 30-day returns." },
+      { name: "keywords", content: "Timera, timera.store, luxury watches, quartz watches, automatic watch, chronograph, dive watch, dress watch, men's luxury watches, women's luxury watches, buy watches online" },
       { name: "author", content: "Timera" },
       { name: "robots", content: "index, follow" },
-      { property: "og:title", content: "Timera — Luxury Swiss Watches Online | timera.store" },
-      { property: "og:description", content: "Shop Timera luxury watches: Swiss automatic, chronograph, dress and dive timepieces. Free insured worldwide shipping, 5-year warranty, 30-day returns." },
+      { property: "og:title", content: "Timera — Luxury Quartz Watches Online | timera.store" },
+      { property: "og:description", content: "Shop Timera luxury watches: precision quartz, chronograph, dress and dive timepieces. Free insured worldwide shipping, 5-year warranty, 30-day returns." },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Timera" },
       { property: "og:locale", content: "en_US" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@timera" },
       { name: "theme-color", content: "#faf8f5" },
-      { name: "twitter:title", content: "Timera — Luxury Swiss Watches Online | timera.store" },
-      { name: "twitter:description", content: "Shop Timera luxury watches: Swiss automatic, chronograph, dress and dive timepieces. Free insured worldwide shipping, 5-year warranty, 30-day returns." },
+      { name: "twitter:title", content: "Timera — Luxury Quartz Watches Online | timera.store" },
+      { name: "twitter:description", content: "Shop Timera luxury watches: precision quartz, chronograph, dress and dive timepieces. Free insured worldwide shipping, 5-year warranty, 30-day returns." },
       { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/36ae3d18-a66d-4d2c-8e58-ed76dda341c9" },
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/36ae3d18-a66d-4d2c-8e58-ed76dda341c9" },
     ],
@@ -119,7 +120,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@type": "Organization",
           name: "Timera",
           url: "https://timera.store/",
-          description: "Swiss luxury watchmaking maison.",
+          description: "Luxury quartz watch house..",
           sameAs: ["https://instagram.com/timera", "https://twitter.com/timera"],
         }),
       },
@@ -162,6 +163,7 @@ function RootComponent() {
         <TrackingPixels />
         <AutoTracker />
         <AiAssistant />
+        <FloatingWhatsApp />
 
 
         <Toaster position="bottom-right" theme="light" />

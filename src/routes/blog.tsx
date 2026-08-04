@@ -6,7 +6,7 @@ export const Route = createFileRoute("/blog")({
   head: () => ({
     meta: [
       { title: "Watch Journal — Guides & Stories | Timera" },
-      { name: "description", content: "Timera's watch journal: buying guides, movement explainers, styling notes and stories from our Swiss atelier." },
+      { name: "description", content: "Timera's watch journal: buying guides, movement explainers, styling notes and stories from our Timera atelier." },
       { name: "keywords", content: "watch journal, watch buying guide, automatic movement guide, luxury watch blog, Timera" },
       { property: "og:title", content: "Watch Journal — Timera" },
       { property: "og:description", content: "Buying guides, movement explainers and stories from the Timera atelier." },

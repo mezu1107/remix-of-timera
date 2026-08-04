@@ -13,11 +13,11 @@ import { useCallback, useEffect, useState } from "react";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Timera — Luxury Swiss Watches Online | timera.store" },
-      { name: "description", content: "Shop Timera luxury watches: Swiss automatic, chronograph, dress and dive timepieces. Free insured worldwide shipping, 5-year warranty, 30-day returns." },
-      { name: "keywords", content: "Timera, luxury watches, Swiss watches, automatic watches, chronograph, men's watches, women's watches, buy watches online, timera.store" },
-      { property: "og:title", content: "Timera — Luxury Swiss Watches Online | timera.store" },
-      { property: "og:description", content: "Shop Timera luxury watches: Swiss automatic, chronograph, dress and dive timepieces. Free insured worldwide shipping, 5-year warranty, 30-day returns." },
+      { title: "Timera — Luxury Quartz Watches Online | timera.store" },
+      { name: "description", content: "Shop Timera luxury watches: precision quartz, chronograph, dress and dive timepieces. Free insured worldwide shipping, 5-year warranty, 30-day returns." },
+      { name: "keywords", content: "Timera, luxury watches, quartz watches, chronograph, men's watches, women's watches, buy watches online, timera.store" },
+      { property: "og:title", content: "Timera — Luxury Quartz Watches Online | timera.store" },
+      { property: "og:description", content: "Shop Timera luxury watches: precision quartz, chronograph, dress and dive timepieces. Free insured worldwide shipping, 5-year warranty, 30-day returns." },
       { property: "og:url", content: "https://timera.store/" },
       { property: "og:type", content: "website" },
     ],
@@ -126,7 +126,7 @@ function HeroSlider() {
           <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3 text-xs text-muted-foreground">
             <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> 5-Year Warranty</div>
             <div className="flex items-center gap-2"><Truck className="h-4 w-4 text-primary" /> Free Insured Shipping</div>
-            <div className="flex items-center gap-2"><Award className="h-4 w-4 text-primary" /> Swiss Made</div>
+            <div className="flex items-center gap-2"><Award className="h-4 w-4 text-primary" /> Quartz Precision</div>
           </div>
         </motion.div>
       </div>
@@ -323,7 +323,7 @@ function HomePage() {
       <section className="container-luxe py-16">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            { icon: Gem, title: "Swiss-Made", desc: "Assembled by hand in Neuchâtel" },
+            { icon: Gem, title: "Quartz Precision", desc: "Japanese quartz movements, accurate to seconds a month" },
             { icon: Shield, title: "5-Year Warranty", desc: "International movement guarantee" },
             { icon: Globe2, title: "Insured Shipping", desc: "Signature-required, worldwide" },
             { icon: Sparkles, title: "White-Glove Returns", desc: "30 days, complimentary" },

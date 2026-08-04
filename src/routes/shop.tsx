@@ -18,10 +18,10 @@ export const Route = createFileRoute("/shop")({
   head: () => ({
     meta: [
       { title: "Shop Luxury Watches Online — All Timepieces | Timera" },
-      { name: "description", content: "Browse every Timera timepiece: Swiss automatic, chronograph, dive and dress watches. Filter by collection, movement, case material and price." },
-      { name: "keywords", content: "buy luxury watches online, Swiss automatic watch, chronograph watch, dive watch, dress watch, Timera shop" },
+      { name: "description", content: "Browse every Timera timepiece: precision quartz, chronograph, dive and dress watches. Filter by collection, movement, case material and price." },
+      { name: "keywords", content: "buy luxury watches online, precision quartz watch, chronograph watch, dive watch, dress watch, Timera shop" },
       { property: "og:title", content: "Shop Luxury Watches Online — Timera" },
-      { property: "og:description", content: "Every Timera timepiece — Swiss automatic, chronograph, dive and dress watches." },
+      { property: "og:description", content: "Every Timera timepiece — precision quartz, chronograph, dive and dress watches." },
       { property: "og:url", content: "https://timera.store/shop" },
       { property: "og:type", content: "website" },
     ],
@@ -134,7 +134,7 @@ function ShopPage() {
         <p className="text-[11px] uppercase tracking-[0.3em] text-primary">The Collection</p>
         <h1 className="mt-3 font-serif text-5xl md:text-6xl">All Timepieces</h1>
         <p className="mt-4 text-muted-foreground max-w-2xl">
-          Every watch in the Timera maison — hand-assembled in Neuchâtel, delivered with a signed authenticity dossier and complimentary insured shipping.
+          Every Timera watch — precision quartz movement, quality-checked in-house, delivered with a signed authenticity card, warranty and insured delivery across Pakistan.
         </p>
       </div>
 

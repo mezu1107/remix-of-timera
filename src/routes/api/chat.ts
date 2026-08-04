@@ -11,7 +11,11 @@ export const Route = createFileRoute("/api/chat")({
         if (!Array.isArray(body.messages)) return new Response("Messages are required", { status: 400 });
 
         const key = process.env.LOVABLE_API_KEY;
-        if (!key) return new Response("AI is not configured", { status: 500 });
+        if (!key)
+          return new Response(
+            "The concierge key (LOVABLE_API_KEY) is missing on this deployment. Add it to the hosting environment variables and redeploy.",
+            { status: 500 },
+          );
 
         let catalogue = "";
         try {
@@ -21,10 +25,14 @@ export const Route = createFileRoute("/api/chat")({
         }
 
         const gateway = createLovableAiGatewayProvider(key);
-        const result = streamText({
+        let result;
+        try {
+          result = streamText({
           model: gateway(CHAT_MODEL),
           system: [
-            "You are the Timera Concierge, a warm and precise shopping assistant for the Timera luxury watch store.",
+            "You are the Timera Concierge, a warm and precise shopping assistant for the Timera watch store (Pakistan).",
+            "Every Timera watch uses a precision QUARTZ movement. Timera is NOT Swiss-made and never claim otherwise — if asked, explain quartz is more accurate, service-free and keeps prices honest.",
+            "Your job is to close the sale: always end with a clear next step (a product link, /shop, or /checkout).",
             "Answer only using the catalogue and store policies below. If something is not covered, say so and suggest contacting the team via the Contact page.",
             "Recommend at most 3 watches at a time. Always mention the price in Pakistani Rupees (Rs) and link the product as a markdown link like [Name](/product/slug).",
             "Never invent products, prices, discount codes, delivery dates or specifications.",
@@ -36,8 +44,11 @@ export const Route = createFileRoute("/api/chat")({
             "CATALOGUE:",
             catalogue || "(catalogue unavailable right now — apologise and suggest browsing /shop)",
           ].join("\n"),
-          messages: await convertToModelMessages(body.messages as UIMessage[]),
-        });
+            messages: await convertToModelMessages(body.messages as UIMessage[]),
+          });
+        } catch (e: any) {
+          return new Response(e?.message ?? "The concierge could not start.", { status: 500 });
+        }
 
         return result.toUIMessageStreamResponse({ originalMessages: body.messages as UIMessage[] });
       },

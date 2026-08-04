@@ -141,9 +141,14 @@ export function AiAssistant() {
               </div>
             )}
             {error && (
-              <p className="text-sm text-destructive">
-                The concierge is unavailable right now. Please try again in a moment.
-              </p>
+              <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3">
+                <p className="text-sm text-destructive">
+                  {error.message?.slice(0, 220) || "The concierge is unavailable right now."}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  You can also reach a human on WhatsApp — the green button on the right.
+                </p>
+              </div>
             )}
           </div>
 
