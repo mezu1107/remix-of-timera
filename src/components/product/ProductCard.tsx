@@ -63,15 +63,6 @@ export function ProductCard({
                 Sale
               </span>
             )}
-            <span
-              className={cn(
-                "px-2.5 py-1 text-[10px] uppercase tracking-widest font-medium rounded-sm",
-                product.badge === "Sale" && "bg-destructive text-destructive-foreground",
-                product.badge === "New" && "bg-foreground text-background",
-                product.badge === "Bestseller" && "bg-primary text-primary-foreground",
-                product.badge === "Limited" && "bg-onyx text-primary border border-primary/40",
-              )}
-            >
             {product.badge && (
               <span
                 className={cn(
