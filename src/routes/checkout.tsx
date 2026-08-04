@@ -8,7 +8,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { useCart } from "@/store/shop";
 import { formatPrice } from "@/lib/utils";
-import { couponsQuery, paymentSettingsQuery } from "@/lib/catalog";
+import { couponsQuery, effectivePrice, paymentSettingsQuery } from "@/lib/catalog";
 import { supabase } from "@/integrations/supabase/client";
 import { CheckCircle2, Lock, Loader2, Truck, ShieldCheck, Gift } from "lucide-react";
 import { toast } from "sonner";
@@ -36,12 +36,15 @@ function CheckoutPage() {
   const { data: settings } = useQuery(paymentSettingsQuery);
 
   const [couponInput, setCouponInput] = useState("");
-  const [appliedCode, setAppliedCode] = useState<string | null>(null);
+  const [appliedCode, setAppliedCode] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    try { return localStorage.getItem("timera.coupon"); } catch { return null; }
+  });
   const [payMethod, setPayMethod] = useState<PayMethod>("cod");
   const [placed, setPlaced] = useState<{ orderNumber: string; email: string } | null>(null);
   const checkoutTracked = useRef(false);
 
-  const subtotal = items.reduce((a, i) => a + (i.product.salePrice ?? i.product.price) * i.quantity, 0);
+  const subtotal = items.reduce((a, i) => a + effectivePrice(i.product) * i.quantity, 0);
 
   const coupon = useMemo(
     () => coupons.find((c) => c.code.toLowerCase() === (appliedCode ?? "").toLowerCase()) ?? null,
@@ -86,6 +89,7 @@ function CheckoutPage() {
     if (!found) return toast.error("That code isn't valid.");
     if (subtotal < found.minOrder) return toast.error(`This code needs a minimum order of ${formatPrice(found.minOrder)}.`);
     setAppliedCode(found.code);
+    try { localStorage.setItem("timera.coupon", found.code); } catch { /* ignore */ }
     toast.success(`Code ${found.code} applied.`);
   };
 
