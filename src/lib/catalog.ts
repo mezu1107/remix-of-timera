@@ -131,12 +131,6 @@ export type BlogPost = {
   date: string;
 };
 
-const defaultColors: ProductColor[] = [
-  { name: "Onyx", hex: "#1a1a1a" },
-  { name: "Champagne", hex: "#c9a86a" },
-  { name: "Silver", hex: "#c0c5cd" },
-];
-
 const asArray = (v: unknown): string[] =>
   Array.isArray(v) ? (v as unknown[]).filter((x): x is string => typeof x === "string") : [];
 
@@ -148,7 +142,7 @@ const asArray = (v: unknown): string[] =>
  */
 function parseColors(v: unknown): ProductColor[] {
   const rows = asArray(v);
-  if (!rows.length) return defaultColors;
+  if (!rows.length) return [];
   const parsed = rows
     .map((row) => {
       const [left, ...rest] = row.split("|");
@@ -160,7 +154,7 @@ function parseColors(v: unknown): ProductColor[] {
       return { name, hex, image: image || undefined };
     })
     .filter((c) => c.name.length > 0);
-  return parsed.length ? parsed : defaultColors;
+  return parsed;
 }
 
 
