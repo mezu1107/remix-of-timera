@@ -133,9 +133,14 @@ export function ProductCard({
           </div>
         )}
         <div className="flex items-baseline gap-2">
-          <span className="text-sm font-medium">{formatPrice(product.price)}</span>
-          {product.compareAt && (
-            <span className="text-xs text-muted-foreground line-through">{formatPrice(product.compareAt)}</span>
+          <span className="text-sm font-medium">{formatPrice(effectivePrice(product))}</span>
+          {listPrice(product) && (
+            <>
+              <span className="text-xs text-muted-foreground line-through">{formatPrice(listPrice(product)!)}</span>
+              <span className="rounded-sm bg-destructive/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-destructive">
+                Save {Math.round(100 - (effectivePrice(product) / listPrice(product)!) * 100)}%
+              </span>
+            </>
           )}
         </div>
       </div>
