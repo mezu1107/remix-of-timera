@@ -110,7 +110,7 @@ export function ColorsField({
               variant="ghost"
               size="icon"
               aria-label="Remove colour"
-              onClick={() => setRows(rows.filter((_, idx) => idx !== i))}
+              onClick={() => commit(rows.filter((_, idx) => idx !== i))}
             >
               <Trash2 className="h-4 w-4 text-destructive" />
             </Button>
@@ -129,7 +129,7 @@ export function ColorsField({
         type="button"
         variant="outline"
         size="sm"
-        onClick={() => setRows([...rows, { name: "", hex: "#1a1a1a", image: "" }])}
+        onClick={() => commit([...rows, { name: "", hex: "#1a1a1a", image: "" }])}
       >
         <Plus className="mr-2 h-4 w-4" /> Add colour
       </Button>
