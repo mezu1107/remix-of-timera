@@ -45,6 +45,7 @@ function ProductsAdmin() {
       title="Products"
       description="Your catalogue. New and edited products appear in the shop instantly."
       orderBy={{ column: "sort_order" }}
+      bulkFieldKeys={["deal_id", "badge", "category", "collection", "sale_price", "stock", "featured", "active"]}
       invalidate={["products", "categories", "deals"]}
       aiAssist={{
         label: "Write this product with AI",
