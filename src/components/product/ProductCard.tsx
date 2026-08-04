@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Heart, ShoppingBag, Eye } from "lucide-react";
 import type { Product } from "@/lib/products";
+import { dealsQuery, effectivePrice, listPrice } from "@/lib/catalog";
+import { useQuery } from "@tanstack/react-query";
 import { useCart, useWishlist } from "@/store/shop";
 import { cn, formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
@@ -21,6 +23,9 @@ export function ProductCard({
   const add = useCart((s) => s.add);
   const toggleWish = useWishlist((s) => s.toggle);
   const inWish = useWishlist((s) => s.ids.includes(product.id));
+  const { data: deals = [] } = useQuery(dealsQuery);
+  const deal = product.dealId ? deals.find((d) => d.id === product.dealId) : undefined;
+  const onSale = !!listPrice(product);
 
   return (
     <div
@@ -46,8 +51,18 @@ export function ProductCard({
           <div className="absolute inset-0 bg-gradient-to-t from-onyx/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         </Link>
 
-        {product.badge && (
-          <div className="absolute top-4 left-4">
+        {(product.badge || deal || onSale) && (
+          <div className="absolute top-4 left-4 flex flex-col items-start gap-1.5">
+            {deal && (
+              <span className="rounded-sm bg-primary px-2.5 py-1 text-[10px] font-medium uppercase tracking-widest text-primary-foreground shadow-sm">
+                {deal.badge || `${deal.discountPercent}% off · ${deal.title}`}
+              </span>
+            )}
+            {!deal && onSale && (
+              <span className="rounded-sm bg-destructive px-2.5 py-1 text-[10px] font-medium uppercase tracking-widest text-destructive-foreground">
+                Sale
+              </span>
+            )}
             <span
               className={cn(
                 "px-2.5 py-1 text-[10px] uppercase tracking-widest font-medium rounded-sm",
@@ -57,8 +72,19 @@ export function ProductCard({
                 product.badge === "Limited" && "bg-onyx text-primary border border-primary/40",
               )}
             >
-              {product.badge}
-            </span>
+            {product.badge && (
+              <span
+                className={cn(
+                  "px-2.5 py-1 text-[10px] uppercase tracking-widest font-medium rounded-sm",
+                  product.badge === "Sale" && "bg-destructive text-destructive-foreground",
+                  product.badge === "New" && "bg-foreground text-background",
+                  product.badge === "Bestseller" && "bg-primary text-primary-foreground",
+                  product.badge === "Limited" && "bg-onyx text-primary border border-primary/40",
+                )}
+              >
+                {product.badge}
+              </span>
+            )}
           </div>
         )}
 
