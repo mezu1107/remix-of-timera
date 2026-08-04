@@ -52,7 +52,7 @@ export function Footer() {
           <div>
             <span className="font-serif text-3xl gold-text">TIMERA</span>
             <p className="mt-6 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              A Swiss maison crafting mechanical timepieces of extraordinary restraint. Every watch is
+              A modern maison crafting mechanical timepieces of extraordinary restraint. Every watch is
               assembled by hand in our Neuchâtel atelier.
             </p>
             <form className="mt-8 flex max-w-md gap-2">

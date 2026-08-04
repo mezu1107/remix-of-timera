@@ -9,7 +9,7 @@ export const testimonials = [
 ];
 
 export const faqs = [
-  { q: "Are your watches authentic and Swiss-made?", a: "Every Timera timepiece is assembled from certified Swiss components and ships with a signed authenticity dossier." },
+  { q: "Are your watches authentic and quartz-powered?", a: "Every Timera timepiece is assembled from precision Japanese quartz movements and ships with a signed authenticity dossier." },
   { q: "What is your warranty policy?", a: "All watches include a 5-year international warranty covering the movement and manufacturing defects." },
   { q: "Do you offer complimentary shipping?", a: "Yes. Every order over Rs 5,000 is shipped insured, express, and signature-required at no cost worldwide." },
   { q: "Can I return or exchange my order?", a: "You have 30 days to return an unworn watch for a full refund. White-glove reverse logistics are complimentary." },

@@ -18,10 +18,10 @@ export const Route = createFileRoute("/shop")({
   head: () => ({
     meta: [
       { title: "Shop Luxury Watches Online — All Timepieces | Timera" },
-      { name: "description", content: "Browse every Timera timepiece: Swiss automatic, chronograph, dive and dress watches. Filter by collection, movement, case material and price." },
-      { name: "keywords", content: "buy luxury watches online, Swiss automatic watch, chronograph watch, dive watch, dress watch, Timera shop" },
+      { name: "description", content: "Browse every Timera timepiece: precision quartz, chronograph, dive and dress watches. Filter by collection, movement, case material and price." },
+      { name: "keywords", content: "buy luxury watches online, precision quartz watch, chronograph watch, dive watch, dress watch, Timera shop" },
       { property: "og:title", content: "Shop Luxury Watches Online — Timera" },
-      { property: "og:description", content: "Every Timera timepiece — Swiss automatic, chronograph, dive and dress watches." },
+      { property: "og:description", content: "Every Timera timepiece — precision quartz, chronograph, dive and dress watches." },
       { property: "og:url", content: "https://timera.store/shop" },
       { property: "og:type", content: "website" },
     ],

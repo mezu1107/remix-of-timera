@@ -8,9 +8,9 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "Our Atelier — Timera" },
-      { name: "description", content: "Since 1963, the Timera atelier has crafted Swiss timepieces of extraordinary restraint. Three generations, one obsession." },
+      { name: "description", content: "Since 1963, the Timera atelier has crafted quartz timepieces of extraordinary restraint. Three generations, one obsession." },
       { property: "og:title", content: "Our Atelier — Timera" },
-      { property: "og:description", content: "Three generations of Swiss watchmaking." },
+      { property: "og:description", content: "Three generations of quartz watchmaking." },
     ],
   }),
   component: AboutPage,
