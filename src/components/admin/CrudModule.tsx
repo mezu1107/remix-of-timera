@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Pencil, Plus, Trash2, RefreshCw, Sparkles, Loader2 } from "lucide-react";
+import { Pencil, Plus, Trash2, RefreshCw, Sparkles, Loader2, Download, CheckSquare } from "lucide-react";
 import { toast } from "sonner";
 import { ImageField, ImagesField } from "./ImageField";
 import { ColorsField } from "./ColorsField";
@@ -73,7 +73,29 @@ type Props = {
     help?: string;
     run: (form: Record<string, any>) => Promise<Record<string, any>>;
   };
+  /** Show checkboxes, CSV export and bulk edit for the listed field keys. */
+  bulkFieldKeys?: string[];
 };
+
+/** Turns rows into a spreadsheet-safe CSV (every column, nested values as JSON). */
+function rowsToCsv(rows: Record<string, any>[]) {
+  const headers = [...new Set(rows.flatMap((r) => Object.keys(r)))];
+  const cell = (v: unknown) => {
+    if (v === null || v === undefined) return "";
+    const text = typeof v === "object" ? JSON.stringify(v) : String(v);
+    return `"${text.replace(/"/g, '""')}"`;
+  };
+  return [headers.join(","), ...rows.map((r) => headers.map((h) => cell(r[h])).join(","))].join("\n");
+}
+
+function downloadCsv(filename: string, csv: string) {
+  const url = URL.createObjectURL(new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 
 const emptyFor = (f: FieldDef) => {
@@ -109,6 +131,7 @@ export function CrudModule({
   allowCreate = true,
   allowDelete = true,
   aiAssist,
+  bulkFieldKeys,
 }: Props) {
   const [aiBusy, setAiBusy] = useState(false);
   const qc = useQueryClient();
@@ -116,6 +139,9 @@ export function CrudModule({
   const [editing, setEditing] = useState<Record<string, any> | null>(null);
   const [form, setForm] = useState<Record<string, any>>({});
   const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState<string[]>([]);
+  const [bulkKey, setBulkKey] = useState("");
+  const [bulkValue, setBulkValue] = useState<any>("");
 
   const listQuery = useQuery({
     queryKey: ["admin", table],
@@ -200,6 +226,52 @@ export function CrudModule({
     },
     onError: (e: any) => toast.error(e?.message ?? "Could not delete"),
   });
+
+  const bulkFields = (bulkFieldKeys ?? []).map((k) => fields.find((f) => f.key === k)).filter(Boolean) as FieldDef[];
+  const bulkEnabled = bulkFields.length > 0;
+  const bulkField = bulkFields.find((f) => f.key === bulkKey) ?? null;
+
+  const bulkUpdate = useMutation({
+    mutationFn: async () => {
+      if (!bulkField || selected.length === 0) return;
+      const raw = bulkValue;
+      let value: any;
+      if (bulkField.type === "number") value = raw === "" || raw === null ? null : Number(raw);
+      else if (bulkField.type === "switch") value = !!raw;
+      else value = raw === "" || raw === "__clear__" ? null : raw;
+      const { error } = await (supabase.from(table) as any).update({ [bulkField.key]: value }).in("id", selected);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success(`Updated ${selected.length} item(s)`);
+      setSelected([]);
+      refreshPublic();
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Bulk update failed"),
+  });
+
+  const bulkDelete = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from(table).delete().in("id", selected);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Deleted");
+      setSelected([]);
+      refreshPublic();
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Bulk delete failed"),
+  });
+
+  const exportRows = async (onlySelected: boolean) => {
+    const { data, error } = await supabase.from(table).select("*");
+    if (error) return toast.error(error.message);
+    const list = (data ?? []) as Record<string, any>[];
+    const picked = onlySelected ? list.filter((r) => selected.includes(r.id)) : list;
+    if (!picked.length) return toast.error("Nothing to export");
+    downloadCsv(`${table}-${new Date().toISOString().slice(0, 10)}.csv`, rowsToCsv(picked));
+    toast.success(`Exported ${picked.length} row(s)`);
+  };
 
   const allRows = listQuery.data ?? [];
   const rows = useMemo(() => {
@@ -290,6 +362,12 @@ export function CrudModule({
           <Button variant="outline" size="sm" className="hidden sm:inline-flex" onClick={() => refreshPublic()}>
             <RefreshCw className="h-4 w-4 mr-2" /> Refresh
           </Button>
+          {bulkEnabled && (
+            <Button variant="outline" size="sm" onClick={() => void exportRows(selected.length > 0)}>
+              <Download className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">{selected.length ? `Export ${selected.length}` : "Export CSV"}</span>
+            </Button>
+          )}
           {allowCreate && (
             <Button size="sm" onClick={openCreate}>
               <Plus className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">New</span>
@@ -305,6 +383,89 @@ export function CrudModule({
         className="mt-6 h-11 max-w-sm"
       />
 
+      {bulkEnabled && (
+        <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-border bg-muted/40 p-3">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setSelected(selected.length === rows.length ? [] : rows.map((r) => r.id))}
+          >
+            <CheckSquare className="mr-2 h-4 w-4" />
+            {selected.length === rows.length && rows.length > 0 ? "Clear selection" : "Select all shown"}
+          </Button>
+          <span className="text-xs text-muted-foreground">{selected.length} selected</span>
+
+          <Select value={bulkKey} onValueChange={(v) => { setBulkKey(v); setBulkValue(""); }}>
+            <SelectTrigger className="h-10 w-[190px]">
+              <SelectValue placeholder="Bulk change…" />
+            </SelectTrigger>
+            <SelectContent>
+              {bulkFields.map((f) => (
+                <SelectItem key={f.key} value={f.key}>
+                  {f.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {bulkField?.type === "switch" ? (
+            <Select value={String(bulkValue)} onValueChange={(v) => setBulkValue(v === "true")}>
+              <SelectTrigger className="h-10 w-[140px]"><SelectValue placeholder="Value" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="true">Yes</SelectItem>
+                <SelectItem value="false">No</SelectItem>
+              </SelectContent>
+            </Select>
+          ) : bulkField?.type === "select" ? (
+            <Select value={String(bulkValue)} onValueChange={setBulkValue}>
+              <SelectTrigger className="h-10 w-[190px]"><SelectValue placeholder="Value" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__clear__">— Remove —</SelectItem>
+                {(bulkField.options ?? []).map((o) => {
+                  const opt = typeof o === "string" ? { label: o, value: o } : o;
+                  return (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          ) : bulkField ? (
+            <Input
+              className="h-10 w-[170px]"
+              type={bulkField.type === "number" ? "number" : "text"}
+              value={bulkValue ?? ""}
+              placeholder="New value"
+              onChange={(e) => setBulkValue(e.target.value)}
+            />
+          ) : null}
+
+          <Button
+            type="button"
+            size="sm"
+            disabled={!bulkField || selected.length === 0 || bulkUpdate.isPending}
+            onClick={() => bulkUpdate.mutate()}
+          >
+            {bulkUpdate.isPending ? "Applying…" : "Apply to selected"}
+          </Button>
+          {allowDelete && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={selected.length === 0 || bulkDelete.isPending}
+              onClick={() => {
+                if (confirm(`Delete ${selected.length} item(s) permanently?`)) bulkDelete.mutate();
+              }}
+            >
+              <Trash2 className="mr-2 h-4 w-4 text-destructive" /> Delete selected
+            </Button>
+          )}
+        </div>
+      )}
+
       {/* Mobile: cards */}
       <div className="mt-6 space-y-3 md:hidden">
         {listQuery.isLoading && <p className="py-8 text-center text-muted-foreground">Loading…</p>}
@@ -315,6 +476,17 @@ export function CrudModule({
           <div key={row.id} className="rounded-xl border border-border bg-card p-4">
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
               <div className="flex min-w-0 items-start gap-3">
+                {bulkEnabled && (
+                  <input
+                    type="checkbox"
+                    aria-label="Select row"
+                    className="mt-1 h-4 w-4 shrink-0 accent-[hsl(var(--primary))]"
+                    checked={selected.includes(row.id)}
+                    onChange={(e) =>
+                      setSelected((s) => (e.target.checked ? [...s, row.id] : s.filter((id) => id !== row.id)))
+                    }
+                  />
+                )}
                 {row.image_url && (
                   <img src={row.image_url} alt="" className="h-14 w-14 shrink-0 rounded-md object-cover" />
                 )}
@@ -361,6 +533,7 @@ export function CrudModule({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border text-left">
+              {bulkEnabled && <th className="w-10 px-4 py-3" />}
               {columns.map((c) => (
                 <th key={c.key} className="whitespace-nowrap px-4 py-3 text-[11px] uppercase tracking-widest text-muted-foreground font-medium">
                   {c.label}
@@ -372,20 +545,33 @@ export function CrudModule({
           <tbody>
             {listQuery.isLoading && (
               <tr>
-                <td colSpan={columns.length + 1} className="px-4 py-10 text-center text-muted-foreground">
+                <td colSpan={columns.length + (bulkEnabled ? 2 : 1)} className="px-4 py-10 text-center text-muted-foreground">
                   Loading…
                 </td>
               </tr>
             )}
             {!listQuery.isLoading && rows.length === 0 && (
               <tr>
-                <td colSpan={columns.length + 1} className="px-4 py-10 text-center text-muted-foreground">
+                <td colSpan={columns.length + (bulkEnabled ? 2 : 1)} className="px-4 py-10 text-center text-muted-foreground">
                   Nothing here yet.
                 </td>
               </tr>
             )}
             {rows.map((row) => (
               <tr key={row.id} className="border-b border-border/60 last:border-0 hover:bg-muted/50">
+                {bulkEnabled && (
+                  <td className="px-4 py-3">
+                    <input
+                      type="checkbox"
+                      aria-label="Select row"
+                      className="h-4 w-4 accent-[hsl(var(--primary))]"
+                      checked={selected.includes(row.id)}
+                      onChange={(e) =>
+                        setSelected((s) => (e.target.checked ? [...s, row.id] : s.filter((id) => id !== row.id)))
+                      }
+                    />
+                  </td>
+                )}
                 {columns.map((c) => (
                   <td key={c.key} className="max-w-[280px] truncate px-4 py-3 align-middle">
                     {c.render ? c.render(row) : String(row[c.key] ?? "—")}
