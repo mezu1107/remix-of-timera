@@ -14,6 +14,7 @@ export const Route = createFileRoute("/wishlist")({
       { property: "og:title", content: "Your Wishlist — Timera" },
       { property: "og:description", content: "Your saved Timera timepieces." },
     ],
+    links: [{ rel: "canonical", href: "https://timera.store/wishlist" }],
   }),
   component: WishlistPage,
 });

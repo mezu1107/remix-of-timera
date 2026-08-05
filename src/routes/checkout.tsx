@@ -23,6 +23,7 @@ export const Route = createFileRoute("/checkout")({
       { property: "og:description", content: "Cash on Delivery, Easypaisa, JazzCash and bank transfer — delivered across Pakistan." },
       { name: "robots", content: "noindex" },
     ],
+    links: [{ rel: "canonical", href: "https://timera.store/checkout" }],
   }),
   component: CheckoutPage,
 });

@@ -17,6 +17,7 @@ export const Route = createFileRoute("/cart")({
       { property: "og:title", content: "Your Cart — Timera" },
       { property: "og:description", content: "Review your Timera cart." },
     ],
+    links: [{ rel: "canonical", href: "https://timera.store/cart" }],
   }),
   component: CartPage,
 });
