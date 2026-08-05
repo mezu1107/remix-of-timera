@@ -71,11 +71,15 @@ export const Route = createFileRoute("/api/chat")({
           ].join("\n"),
             messages: await convertToModelMessages(body.messages as UIMessage[]),
           });
-        } catch (e: any) {
-          return new Response(e?.message ?? "The concierge could not start.", { status: 500 });
+        } catch {
+          return fallbackStream(OFFLINE_REPLY);
         }
 
-        return result.toUIMessageStreamResponse({ originalMessages: body.messages as UIMessage[] });
+        try {
+          return result.toUIMessageStreamResponse({ originalMessages: body.messages as UIMessage[] });
+        } catch {
+          return fallbackStream(OFFLINE_REPLY);
+        }
       },
     },
   },
