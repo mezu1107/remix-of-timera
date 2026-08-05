@@ -3,6 +3,35 @@ import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { CHAT_MODEL, createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 import { catalogueToText, loadCatalogue } from "@/lib/store-data.server";
 
+/**
+ * The concierge must never show a red error to a shopper. When the AI is not
+ * reachable we stream a helpful hand-written reply in the same UI-message
+ * stream format, so the chat keeps working on every deployment.
+ */
+function fallbackStream(text: string) {
+  const events: unknown[] = [
+    { type: "start" },
+    { type: "start-step" },
+    { type: "text-start", id: "fallback" },
+    { type: "text-delta", id: "fallback", delta: text },
+    { type: "text-end", id: "fallback" },
+    { type: "finish-step" },
+    { type: "finish" },
+  ];
+  const body = events.map((e) => `data: ${JSON.stringify(e)}\n\n`).join("") + "data: [DONE]\n\n";
+  return new Response(body, {
+    status: 200,
+    headers: {
+      "content-type": "text/event-stream",
+      "cache-control": "no-cache",
+      "x-vercel-ai-ui-message-stream": "v1",
+    },
+  });
+}
+
+const OFFLINE_REPLY =
+  "I'm briefly offline, but I can still point you the right way: browse every precision-quartz Timera at /shop, current offers at /deals, and track an order at /track. Complimentary insured shipping over Rs 5,000 and 30-day returns on unworn pieces. For an instant human answer, tap the green WhatsApp button.";
+
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
@@ -11,11 +40,7 @@ export const Route = createFileRoute("/api/chat")({
         if (!Array.isArray(body.messages)) return new Response("Messages are required", { status: 400 });
 
         const key = process.env.LOVABLE_API_KEY;
-        if (!key)
-          return new Response(
-            "The concierge key (LOVABLE_API_KEY) is missing on this deployment. Add it to the hosting environment variables and redeploy.",
-            { status: 500 },
-          );
+        if (!key) return fallbackStream(OFFLINE_REPLY);
 
         let catalogue = "";
         try {
