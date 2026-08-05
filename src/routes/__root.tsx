@@ -157,9 +157,16 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen flex flex-col">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+        >
+          Skip to content
+        </a>
+        <ScrollProgress />
         <AnnouncementBar />
         <Header />
-        <main className="flex-1">
+        <main id="main" className="flex-1">
           <Outlet />
         </main>
         <Footer />
@@ -169,8 +176,7 @@ function RootComponent() {
         <AutoTracker />
         <AiAssistant />
         <FloatingWhatsApp />
-
-
+        <BackToTop />
         <Toaster position="bottom-right" theme="light" />
       </div>
     </QueryClientProvider>
