@@ -44,15 +44,14 @@ function CartPage() {
   const shipping = items.length === 0 || subtotal - applied >= freeAbove ? 0 : (settings?.deliveryCharge ?? 250);
   const total = Math.max(0, subtotal + shipping - applied);
 
-  const applyCoupon = () => {
+  const applyCoupon = async () => {
     const code = coupon.trim();
     if (!code) return;
-    const found = coupons.find((c) => c.code.toLowerCase() === code.toLowerCase());
-    if (!found) return toast.error("That code isn't valid.");
-    if (subtotal < found.minOrder) return toast.error(`This code needs a minimum order of ${formatPrice(found.minOrder)}.`);
-    setAppliedCode(found.code);
-    try { localStorage.setItem("timera.coupon", found.code); } catch { /* ignore */ }
-    toast.success(`Code ${found.code} applied.`);
+    const result = await validateCoupon(code, subtotal, coupons);
+    if (!result.valid) return toast.error(result.reason);
+    setAppliedCode(result.code);
+    try { localStorage.setItem("timera.coupon", result.code); } catch { /* ignore */ }
+    toast.success(`Code ${result.code} applied.`);
   };
 
   if (items.length === 0) {
