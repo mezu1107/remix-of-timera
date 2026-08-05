@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCart } from "@/store/shop";
 import { formatPrice } from "@/lib/utils";
 import { couponsQuery, effectivePrice, paymentSettingsQuery } from "@/lib/catalog";
+import { validateCoupon } from "@/lib/coupons";
 import { supabase } from "@/integrations/supabase/client";
 import { CheckCircle2, Lock, Loader2, Truck, ShieldCheck, Gift } from "lucide-react";
 import { toast } from "sonner";
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/checkout")({
       { property: "og:description", content: "Cash on Delivery, Easypaisa, JazzCash and bank transfer — delivered across Pakistan." },
       { name: "robots", content: "noindex" },
     ],
+    links: [{ rel: "canonical", href: "https://timera.store/checkout" }],
   }),
   component: CheckoutPage,
 });
@@ -83,14 +85,14 @@ function CheckoutPage() {
     setTimeout(() => setPayMethod(methods[0].id), 0);
   }
 
-  const applyCoupon = () => {
+  const applyCoupon = async () => {
     const code = couponInput.trim();
-    const found = coupons.find((c) => c.code.toLowerCase() === code.toLowerCase());
-    if (!found) return toast.error("That code isn't valid.");
-    if (subtotal < found.minOrder) return toast.error(`This code needs a minimum order of ${formatPrice(found.minOrder)}.`);
-    setAppliedCode(found.code);
-    try { localStorage.setItem("timera.coupon", found.code); } catch { /* ignore */ }
-    toast.success(`Code ${found.code} applied.`);
+    if (!code) return;
+    const result = await validateCoupon(code, subtotal, coupons);
+    if (!result.valid) return toast.error(result.reason);
+    setAppliedCode(result.code);
+    try { localStorage.setItem("timera.coupon", result.code); } catch { /* ignore */ }
+    toast.success(`Code ${result.code} applied.`);
   };
 
   const placeOrder = useMutation({

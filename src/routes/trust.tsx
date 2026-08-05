@@ -67,6 +67,7 @@ export const Route = createFileRoute("/trust")({
       { property: "og:description", content: "Our data handling, security practices and responsible AI use, in plain English." },
       { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://timera.store/trust" }],
   }),
   component: TrustPage,
 });

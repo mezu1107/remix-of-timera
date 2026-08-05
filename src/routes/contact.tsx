@@ -19,6 +19,7 @@ export const Route = createFileRoute("/contact")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://timera.store/contact" }],
   }),
   component: ContactPage,
 });

@@ -14,6 +14,7 @@ export const Route = createFileRoute("/deals/")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://timera.store/deals" }],
   }),
   component: DealsPage,
 });

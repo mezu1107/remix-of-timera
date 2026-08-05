@@ -21,6 +21,7 @@ export const Route = createFileRoute("/account")({
       { property: "og:description", content: "Your Timera account dashboard." },
       { name: "robots", content: "noindex, nofollow" },
     ],
+    links: [{ rel: "canonical", href: "https://timera.store/account" }],
   }),
   component: AccountPage,
 });

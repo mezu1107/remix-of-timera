@@ -2,7 +2,9 @@ import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-ro
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { colorSlug, mapProduct, productsQuery, type Product } from "@/lib/catalog";
+import { colorSlug, mapProduct, productsQuery, reviewsQuery, type Product } from "@/lib/catalog";
+import { pushRecentlyViewed } from "@/lib/recently-viewed";
+import { RecentlyViewed } from "@/components/RecentlyViewed";
 import { useCart, useWishlist } from "@/store/shop";
 import { Button } from "@/components/ui/button";
 import { formatPrice, cn } from "@/lib/utils";
@@ -97,9 +99,11 @@ function ProductPage() {
   const mainImage = colorImage ?? product.gallery[selectedImg];
 
   const { data: allProducts = [] } = useQuery(productsQuery);
+  const { data: productReviews = [] } = useQuery(reviewsQuery(product.id));
   const related = allProducts.filter((p) => p.id !== product.id && p.collection === product.collection).slice(0, 4);
 
   useEffect(() => {
+    pushRecentlyViewed(product.slug);
     void trackEvent("view_item", {
       productId: product.id,
       productSlug: product.slug,
@@ -398,27 +402,34 @@ function ProductPage() {
                 <p className="mt-2 text-sm text-muted-foreground">Based on {product.reviews} reviews</p>
               </div>
               <div className="space-y-6">
-                {[
-                  { name: "Marcus D.", date: "2 weeks ago", rating: 5, text: "The finish is exquisite. I've owned pieces at 3x the price with less soul." },
-                  { name: "Elena V.", date: "1 month ago", rating: 5, text: "Wore it for a black-tie event and got three compliments in one hour." },
-                  { name: "Thomas R.", date: "2 months ago", rating: 4, text: "Beautiful movement. The strap softens up nicely after a few weeks of wear." },
-                ].map((r) => (
-                  <div key={r.name} className="pb-6 border-b border-border/40">
-                    <div className="flex justify-between">
-                      <div>
-                        <p className="font-medium">{r.name}</p>
-                        <div className="flex text-primary mt-1">
-                          {Array.from({ length: 5 }).map((_, i) => <Star key={i} className={cn("h-3 w-3", i < r.rating && "fill-current")} />)}
+                {productReviews.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">
+                    No written reviews for this piece yet — yours would be the first.
+                  </p>
+                ) : (
+                  productReviews.map((r) => (
+                    <div key={r.id} className="pb-6 border-b border-border/40">
+                      <div className="flex justify-between">
+                        <div>
+                          <p className="font-medium">{r.customerName}</p>
+                          <div className="flex text-primary mt-1">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star key={i} className={cn("h-3 w-3", i < r.rating && "fill-current")} />
+                            ))}
+                          </div>
                         </div>
+                        <span className="text-xs text-muted-foreground">
+                          {r.createdAt ? new Date(r.createdAt).toLocaleDateString("en-PK") : ""}
+                        </span>
                       </div>
-                      <span className="text-xs text-muted-foreground">{r.date}</span>
+                      {r.title && <p className="mt-2 text-sm font-medium">{r.title}</p>}
+                      <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>
+                      <div className="mt-3 flex items-center gap-2 text-xs text-primary">
+                        <Check className="h-3 w-3" /> Verified purchase
+                      </div>
                     </div>
-                    <p className="mt-3 text-sm text-muted-foreground">{r.text}</p>
-                    <div className="mt-3 flex items-center gap-2 text-xs text-primary">
-                      <Check className="h-3 w-3" /> Verified purchase
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </TabsContent>
@@ -442,6 +453,8 @@ function ProductPage() {
           </div>
         </div>
       )}
+
+      <RecentlyViewed excludeSlug={product.slug} />
     </div>
   );
 }
