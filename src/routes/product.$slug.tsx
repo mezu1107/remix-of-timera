@@ -454,7 +454,7 @@ function ProductPage() {
         </div>
       )}
 
-      <RecentlyViewed currentSlug={product.slug} />
+      <RecentlyViewed excludeSlug={product.slug} />
     </div>
   );
 }
