@@ -2,7 +2,9 @@ import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-ro
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { colorSlug, mapProduct, productsQuery, type Product } from "@/lib/catalog";
+import { colorSlug, mapProduct, productsQuery, reviewsQuery, type Product } from "@/lib/catalog";
+import { pushRecentlyViewed } from "@/lib/recently-viewed";
+import { RecentlyViewed } from "@/components/RecentlyViewed";
 import { useCart, useWishlist } from "@/store/shop";
 import { Button } from "@/components/ui/button";
 import { formatPrice, cn } from "@/lib/utils";
