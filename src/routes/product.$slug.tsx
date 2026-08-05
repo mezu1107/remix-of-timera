@@ -97,9 +97,11 @@ function ProductPage() {
   const mainImage = colorImage ?? product.gallery[selectedImg];
 
   const { data: allProducts = [] } = useQuery(productsQuery);
+  const { data: productReviews = [] } = useQuery(reviewsQuery(product.id));
   const related = allProducts.filter((p) => p.id !== product.id && p.collection === product.collection).slice(0, 4);
 
   useEffect(() => {
+    pushRecentlyViewed(product.slug);
     void trackEvent("view_item", {
       productId: product.id,
       productSlug: product.slug,
