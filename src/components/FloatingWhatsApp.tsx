@@ -7,16 +7,18 @@ export function FloatingWhatsApp() {
   const { data: settings } = useQuery(siteSettingsQuery);
   const raw = settings?.whatsappNumber ?? settings?.contactPhone ?? "";
   const number = String(raw).replace(/[^0-9]/g, "");
-  if (!number) return null;
 
-  const href = `https://wa.me/${number}?text=${encodeURIComponent("Hi Timera! I'd like help choosing a watch.")}`;
+  // No number configured yet? Still show the button — it opens the contact page
+  // so a ready-to-buy visitor never hits a dead end.
+  const href = number
+    ? `https://wa.me/${number}?text=${encodeURIComponent("Hi Timera! I'd like help choosing a watch.")}`
+    : "/contact";
 
   return (
     <a
       href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={() => void trackEvent("contact", { metadata: { channel: "whatsapp" } })}
+      {...(number ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      onClick={() => void trackEvent("whatsapp_click", { metadata: { channel: "whatsapp", configured: Boolean(number) } })}
       aria-label="Chat with Timera on WhatsApp"
       className="fixed bottom-24 right-5 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl transition hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
     >
