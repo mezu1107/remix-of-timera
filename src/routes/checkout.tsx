@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCart } from "@/store/shop";
 import { formatPrice } from "@/lib/utils";
 import { couponsQuery, effectivePrice, paymentSettingsQuery } from "@/lib/catalog";
+import { validateCoupon } from "@/lib/coupons";
 import { supabase } from "@/integrations/supabase/client";
 import { CheckCircle2, Lock, Loader2, Truck, ShieldCheck, Gift } from "lucide-react";
 import { toast } from "sonner";
