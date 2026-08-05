@@ -453,6 +453,8 @@ function ProductPage() {
           </div>
         </div>
       )}
+
+      <RecentlyViewed currentSlug={product.slug} />
     </div>
   );
 }
