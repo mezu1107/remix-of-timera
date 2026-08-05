@@ -19,6 +19,8 @@ import { AiAssistant } from "@/components/AiAssistant";
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
 import { TrackingPixels } from "@/components/TrackingPixels";
 import { AutoTracker } from "@/components/AutoTracker";
+import { ScrollProgress } from "@/components/ScrollProgress";
+import { BackToTop } from "@/components/BackToTop";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -107,6 +109,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "preconnect", href: "https://connect.facebook.net" },
+      { rel: "dns-prefetch", href: "https://connect.facebook.net" },
+      { rel: "dns-prefetch", href: "https://www.googletagmanager.com" },
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap",
