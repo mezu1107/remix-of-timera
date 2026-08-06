@@ -178,6 +178,7 @@ function RootComponent() {
         <AiAssistant />
         <FloatingWhatsApp />
         <BackToTop />
+        <LiveSalesToast />
         <Toaster position="bottom-right" theme="light" />
       </div>
     </QueryClientProvider>
