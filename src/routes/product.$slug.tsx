@@ -258,6 +258,8 @@ function ProductPage() {
             </span>
           </div>
 
+          <LiveVisitors className="mt-3" label="people are viewing this watch" />
+
           {/* Quantity + Actions */}
           <div className="mt-8 flex gap-3">
             <div className="flex items-center rounded-md border border-border">
