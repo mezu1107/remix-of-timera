@@ -56,7 +56,7 @@ export function LiveSalesToast() {
           className="flex items-center gap-3"
         >
           <img
-            src={sale.product.imageUrl}
+            src={sale.product.image}
             alt={sale.product.name}
             loading="lazy"
             className="h-14 w-14 shrink-0 rounded-xl object-cover"
