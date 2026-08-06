@@ -102,6 +102,9 @@ const googleEventName: Record<TrackingEventName, string> = {
   quick_view: "view_item",
   filter_apply: "filter",
   sort_change: "sort",
+  exit_intent_offer: "view_promotion",
+  upsell_add: "add_to_cart",
+  sticky_buy_click: "select_item",
 };
 
 /** Kept for backwards compatibility with existing imports. */
