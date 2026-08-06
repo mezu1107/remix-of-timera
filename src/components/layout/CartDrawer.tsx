@@ -1,5 +1,7 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCart } from "@/store/shop";
+import { useQuery } from "@tanstack/react-query";
+import { paymentSettingsQuery, effectivePrice } from "@/lib/catalog";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
@@ -10,9 +12,9 @@ import { TrustBadges } from "@/components/conversion/TrustBadges";
 
 export function CartDrawer() {
   const { items, isOpen, setOpen, updateQty, remove } = useCart();
-  const subtotal = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
-  const freeShip = 500;
-  const progress = Math.min(100, (subtotal / freeShip) * 100);
+  const { data: pay } = useQuery(paymentSettingsQuery);
+  const subtotal = items.reduce((sum, i) => sum + effectivePrice(i.product) * i.quantity, 0);
+  const freeShip = Number(pay?.freeDeliveryAbove ?? 5000);
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
@@ -68,7 +70,7 @@ export function CartDrawer() {
                           <Plus className="h-3 w-3" />
                         </button>
                       </div>
-                      <p className="font-medium">{formatPrice(item.product.price * item.quantity)}</p>
+                      <p className="font-medium">{formatPrice(effectivePrice(item.product) * item.quantity)}</p>
                     </div>
                   </div>
                 </div>
