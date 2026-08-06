@@ -14,6 +14,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { CheckCircle2, Lock, Loader2, Truck, ShieldCheck, Gift } from "lucide-react";
 import { toast } from "sonner";
 import { trackEvent } from "@/lib/tracking";
+import { OrderBump } from "@/components/conversion/OrderBump";
+import { FreeShipProgress } from "@/components/conversion/FreeShipProgress";
+import { TrustBadges } from "@/components/conversion/TrustBadges";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({

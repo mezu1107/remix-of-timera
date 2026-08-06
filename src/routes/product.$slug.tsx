@@ -1,4 +1,11 @@
 import { LiveVisitors } from "@/components/social-proof/LiveVisitors";
+import { StockUrgency } from "@/components/conversion/StockUrgency";
+import { DeliveryEstimate } from "@/components/conversion/DeliveryEstimate";
+import { RecentlyBought } from "@/components/conversion/RecentlyBought";
+import { TrustBadges } from "@/components/conversion/TrustBadges";
+import { BundleUpsell } from "@/components/conversion/BundleUpsell";
+import { StickyBuyBar } from "@/components/conversion/StickyBuyBar";
+import { Countdown } from "@/components/conversion/Countdown";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -259,7 +266,13 @@ function ProductPage() {
             </span>
           </div>
 
+          <StockUrgency stock={product.stock} className="mt-4" />
           <LiveVisitors className="mt-3" label="people are viewing this watch" />
+          <RecentlyBought slug={product.slug} className="mt-3" />
+          {product.salePrice != null && product.salePrice < product.price && (
+            <Countdown className="mt-3" label="Sale price ends in" />
+          )}
+          <DeliveryEstimate className="mt-3" />
 
           {/* Quantity + Actions */}
           <div className="mt-8 flex gap-3">
@@ -371,6 +384,11 @@ function ProductPage() {
 
       {/* Reviews & Description */}
       <div className="mt-24">
+        <div className="mb-12 space-y-6">
+          <TrustBadges />
+          <BundleUpsell product={product} />
+        </div>
+
         <Tabs defaultValue="description">
           <TabsList className="w-full justify-start border-b border-border/60 bg-transparent rounded-none h-auto p-0">
             <TabsTrigger value="description" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3 text-xs uppercase tracking-widest">
@@ -457,6 +475,7 @@ function ProductPage() {
       )}
 
       <RecentlyViewed excludeSlug={product.slug} />
+      <StickyBuyBar product={product} onAdd={() => { add(product, { color, size, quantity: qty }); toast.success(`${product.name} added to cart`); }} />
     </div>
   );
 }
