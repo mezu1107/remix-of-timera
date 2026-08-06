@@ -27,7 +27,10 @@ export type TrackingEventName =
   | "coupon_applied"
   | "quick_view"
   | "filter_apply"
-  | "sort_change";
+  | "sort_change"
+  | "exit_intent_offer"
+  | "upsell_add"
+  | "sticky_buy_click";
 
 export type TrackingPayload = {
   pagePath?: string;
@@ -68,6 +71,9 @@ const metaEventName: Record<TrackingEventName, MetaStandardEvent | null> = {
   quick_view: "ViewContent",
   filter_apply: null,
   sort_change: null,
+  exit_intent_offer: null,
+  upsell_add: "AddToCart",
+  sticky_buy_click: null,
 };
 
 const googleEventName: Record<TrackingEventName, string> = {
