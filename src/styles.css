@@ -181,3 +181,56 @@
   50% { transform: translateY(-12px) rotate(1deg); }
 }
 @utility float-slow { animation: float-slow 6s ease-in-out infinite; }
+
+/* ---------- Glass system (premium luxury polish) ---------- */
+@utility glass-card {
+  background: color-mix(in oklab, var(--card) 65%, transparent);
+  backdrop-filter: blur(24px) saturate(150%);
+  border: 1px solid color-mix(in oklab, var(--gold) 14%, transparent);
+  box-shadow: var(--shadow-luxe);
+}
+
+@utility glass-panel {
+  background: color-mix(in oklab, var(--background) 55%, transparent);
+  backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
+}
+
+@utility glass-chip {
+  background: color-mix(in oklab, var(--background) 60%, transparent);
+  backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid color-mix(in oklab, var(--border) 80%, transparent);
+  border-radius: 999px;
+}
+
+@keyframes sheen {
+  0% { transform: translateX(-120%) skewX(-18deg); }
+  100% { transform: translateX(220%) skewX(-18deg); }
+}
+@utility sheen {
+  position: relative;
+  overflow: hidden;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 40%;
+    background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--gold) 28%, transparent), transparent);
+    animation: sheen 3.6s ease-in-out infinite;
+  }
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@utility pop-in { animation: pop-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@utility lift {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+  &:hover { transform: translateY(-4px); box-shadow: var(--shadow-luxe); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
