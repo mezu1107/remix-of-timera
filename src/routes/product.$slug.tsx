@@ -20,9 +20,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { trackEvent } from "@/lib/tracking";
 
 export const Route = createFileRoute("/product/$slug")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    color: typeof search.color === "string" && search.color ? search.color : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { color?: string } =>
+    typeof search.color === "string" && search.color ? { color: search.color } : {},
   loader: async ({ params }) => {
     const { data, error } = await supabase
       .from("products")
