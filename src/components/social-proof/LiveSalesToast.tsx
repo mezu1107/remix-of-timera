@@ -38,7 +38,7 @@ export function LiveSalesToast() {
       }, 6500);
     };
     const first = window.setTimeout(show, 9000);
-    const loop = window.setInterval(show, 010 * 2600);
+    const loop = window.setInterval(show, 26000);
     return () => {
       window.clearTimeout(first);
       window.clearInterval(loop);
