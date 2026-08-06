@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { formatPrice } from "@/lib/utils";
+import { FreeShipProgress } from "@/components/conversion/FreeShipProgress";
+import { CartUpsell } from "@/components/conversion/CartUpsell";
+import { TrustBadges } from "@/components/conversion/TrustBadges";
 
 export function CartDrawer() {
   const { items, isOpen, setOpen, updateQty, remove } = useCart();
@@ -16,16 +19,7 @@ export function CartDrawer() {
       <SheetContent className="w-full sm:max-w-lg flex flex-col bg-background border-l border-border">
         <SheetHeader className="border-b border-border/60 pb-4">
           <SheetTitle className="font-serif text-2xl gold-text">Your Cart</SheetTitle>
-          {subtotal > 0 && subtotal < freeShip && (
-            <div className="mt-2">
-              <p className="text-xs text-muted-foreground">
-                Add <span className="text-primary font-medium">{formatPrice(freeShip - subtotal)}</span> more for complimentary express shipping.
-              </p>
-              <div className="mt-2 h-1 rounded-full bg-secondary overflow-hidden">
-                <div className="h-full transition-all duration-500" style={{ width: `${progress}%`, background: "var(--grad-gold)" }} />
-              </div>
-            </div>
-          )}
+          {subtotal > 0 && <FreeShipProgress subtotal={subtotal} className="mt-3" />}
         </SheetHeader>
 
         {items.length === 0 ? (
@@ -81,6 +75,8 @@ export function CartDrawer() {
               ))}
             </div>
 
+            <CartUpsell />
+
             <div className="border-t border-border/60 pt-4 space-y-4">
               <div className="space-y-1.5 text-sm">
                 <div className="flex justify-between text-muted-foreground">
@@ -104,6 +100,7 @@ export function CartDrawer() {
               <Button variant="outline" asChild className="w-full" onClick={() => setOpen(false)}>
                 <Link to="/cart">View Full Cart</Link>
               </Button>
+              <TrustBadges className="!grid-cols-2 pt-1" />
             </div>
           </>
         )}
