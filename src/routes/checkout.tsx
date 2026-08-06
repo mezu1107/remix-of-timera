@@ -14,6 +14,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { CheckCircle2, Lock, Loader2, Truck, ShieldCheck, Gift } from "lucide-react";
 import { toast } from "sonner";
 import { trackEvent } from "@/lib/tracking";
+import { OrderBump } from "@/components/conversion/OrderBump";
+import { FreeShipProgress } from "@/components/conversion/FreeShipProgress";
+import { TrustBadges } from "@/components/conversion/TrustBadges";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -306,10 +309,16 @@ function CheckoutPage() {
             </div>
           </div>
 
+          <FreeShipProgress subtotal={subtotal - discount} className="mt-4" />
+          <div className="mt-4">
+            <OrderBump />
+          </div>
+
           <Button type="submit" size="lg" className="mt-6 h-12 w-full" disabled={placeOrder.isPending || methods.length === 0}>
             {placeOrder.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Lock className="mr-2 h-4 w-4" />}
             {placeOrder.isPending ? "Placing order…" : "Place Order"}
           </Button>
+          <TrustBadges className="mt-4 !grid-cols-2" />
           {settings?.warrantyNote && (
             <p className="mt-3 text-center text-xs text-muted-foreground">{settings.warrantyNote}</p>
           )}

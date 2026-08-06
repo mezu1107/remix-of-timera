@@ -22,6 +22,7 @@ import { AutoTracker } from "@/components/AutoTracker";
 import { ScrollProgress } from "@/components/ScrollProgress";
 import { BackToTop } from "@/components/BackToTop";
 import { LiveSalesToast } from "@/components/social-proof/LiveSalesToast";
+import { ExitIntentOffer } from "@/components/conversion/ExitIntentOffer";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -179,6 +180,7 @@ function RootComponent() {
         <FloatingWhatsApp />
         <BackToTop />
         <LiveSalesToast />
+        <ExitIntentOffer />
         <Toaster position="bottom-right" theme="light" />
       </div>
     </QueryClientProvider>
