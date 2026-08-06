@@ -1,3 +1,4 @@
+import { LiveVisitors } from "@/components/social-proof/LiveVisitors";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -20,9 +21,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { trackEvent } from "@/lib/tracking";
 
 export const Route = createFileRoute("/product/$slug")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    color: typeof search.color === "string" && search.color ? search.color : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { color?: string } =>
+    typeof search.color === "string" && search.color ? { color: search.color } : {},
   loader: async ({ params }) => {
     const { data, error } = await supabase
       .from("products")
@@ -258,6 +258,8 @@ function ProductPage() {
               Only <span className="text-foreground font-medium">{product.stock}</span> in stock — ships within 24 hours
             </span>
           </div>
+
+          <LiveVisitors className="mt-3" label="people are viewing this watch" />
 
           {/* Quantity + Actions */}
           <div className="mt-8 flex gap-3">

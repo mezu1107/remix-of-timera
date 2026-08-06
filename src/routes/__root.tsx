@@ -21,6 +21,7 @@ import { TrackingPixels } from "@/components/TrackingPixels";
 import { AutoTracker } from "@/components/AutoTracker";
 import { ScrollProgress } from "@/components/ScrollProgress";
 import { BackToTop } from "@/components/BackToTop";
+import { LiveSalesToast } from "@/components/social-proof/LiveSalesToast";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -177,6 +178,7 @@ function RootComponent() {
         <AiAssistant />
         <FloatingWhatsApp />
         <BackToTop />
+        <LiveSalesToast />
         <Toaster position="bottom-right" theme="light" />
       </div>
     </QueryClientProvider>
