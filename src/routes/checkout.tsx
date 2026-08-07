@@ -94,9 +94,9 @@ function CheckoutPage() {
 
   const methods: { id: PayMethod; label: string; sub?: string }[] = [];
   if (settings?.codEnabled ?? true) methods.push({ id: "cod", label: "Cash on Delivery", sub: codExtra ? `+ ${formatPrice(codExtra)} handling` : "Pay in cash when your order arrives" });
-  if (settings?.easypaisaEnabled) methods.push({ id: "easypaisa", label: "Easypaisa", sub: settings?.easypaisaNumber ? `Send to ${settings.easypaisaNumber}` : undefined });
-  if (settings?.jazzcashEnabled) methods.push({ id: "jazzcash", label: "JazzCash", sub: settings?.jazzcashNumber ? `Send to ${settings.jazzcashNumber}` : undefined });
-  if (settings?.bankEnabled) methods.push({ id: "bank", label: "Bank Transfer", sub: settings?.bankName ?? undefined });
+  if (settings?.easypaisaEnabled) methods.push({ id: "easypaisa", label: "Easypaisa", sub: payInfo?.easypaisa?.number ? `Send to ${payInfo.easypaisa.number}` : undefined });
+  if (settings?.jazzcashEnabled) methods.push({ id: "jazzcash", label: "JazzCash", sub: payInfo?.jazzcash?.number ? `Send to ${payInfo.jazzcash.number}` : undefined });
+  if (settings?.bankEnabled) methods.push({ id: "bank", label: "Bank Transfer", sub: payInfo?.bank?.bankName ?? undefined });
   if (methods.length && !methods.some((m) => m.id === payMethod)) {
     // fallback if selected method got disabled while user was on page
     setTimeout(() => setPayMethod(methods[0].id), 0);
