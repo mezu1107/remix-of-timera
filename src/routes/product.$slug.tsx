@@ -100,7 +100,7 @@ function ProductPage() {
   const [color, setColor] = useState(initialColor.name);
   // When a colour has its own photo, that photo replaces the gallery shot.
   const [colorImage, setColorImage] = useState<string | null>(initialColor.image ?? null);
-  const [size, setSize] = useState(product.sizes[0]);
+  const [size, setSize] = useState<string | undefined>(product.sizes.length > 1 ? product.sizes[0] : undefined);
   const [qty, setQty] = useState(1);
 
   const mainImage = colorImage ?? product.gallery[selectedImg];
@@ -234,37 +234,42 @@ function ProductPage() {
 
           </div>
 
-          {/* Size */}
-          <div className="mt-6">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                Case Size: <span className="text-foreground">{size}</span>
-              </p>
-              <button className="text-xs text-primary hover:underline">Size guide</button>
+          {/* Size — only when the product actually offers a choice */}
+          {product.sizes.length > 1 && (
+            <div className="mt-6">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                  Case Size: <span className="text-foreground">{size}</span>
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {product.sizes.map((sz) => (
+                  <button
+                    key={sz}
+                    onClick={() => setSize(sz)}
+                    className={cn(
+                      "min-w-[64px] px-4 h-11 rounded-md border text-sm font-medium transition",
+                      size === sz ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary/50",
+                    )}
+                  >
+                    {sz}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {product.sizes.map((sz) => (
-                <button
-                  key={sz}
-                  onClick={() => setSize(sz)}
-                  className={cn(
-                    "min-w-[64px] px-4 h-11 rounded-md border text-sm font-medium transition",
-                    size === sz ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary/50",
-                  )}
-                >
-                  {sz}
-                </button>
-              ))}
-            </div>
-          </div>
+          )}
 
           {/* Stock */}
-          <div className="mt-6 flex items-center gap-2 text-xs">
-            <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-muted-foreground">
-              Only <span className="text-foreground font-medium">{product.stock}</span> in stock — ships within 24 hours
-            </span>
-          </div>
+          {product.stock > 0 ? (
+            <div className="mt-6 flex items-center gap-2 text-xs">
+              <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-muted-foreground">
+                Only <span className="text-foreground font-medium">{product.stock}</span> in stock — ships within 24 hours
+              </span>
+            </div>
+          ) : (
+            <div className="mt-6 text-xs text-muted-foreground">Currently out of stock — WhatsApp us for restock updates.</div>
+          )}
 
           <StockUrgency stock={product.stock} className="mt-4" />
           <LiveVisitors className="mt-3" label="people are viewing this watch" />

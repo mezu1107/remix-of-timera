@@ -131,8 +131,29 @@ export type BlogPost = {
   date: string;
 };
 
-const asArray = (v: unknown): string[] =>
-  Array.isArray(v) ? (v as unknown[]).filter((x): x is string => typeof x === "string") : [];
+/** Normalises jsonb text arrays, unwrapping values that were double-encoded by CSV imports. */
+const asArray = (v: unknown): string[] => {
+  const raw = Array.isArray(v) ? v : typeof v === "string" ? [v] : [];
+  const out: string[] = [];
+  for (const item of raw) {
+    if (typeof item !== "string") continue;
+    const trimmed = item.trim();
+    if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+      try {
+        const inner = JSON.parse(trimmed);
+        if (Array.isArray(inner)) {
+          out.push(...inner.filter((x): x is string => typeof x === "string").map((x) => x.trim()));
+          continue;
+        }
+      } catch {
+        /* fall through to manual clean-up */
+      }
+    }
+    const cleaned = trimmed.replace(/^\[+|\]+$/g, "").replace(/^"+|"+$/g, "").trim();
+    if (cleaned) out.push(cleaned);
+  }
+  return out;
+};
 
 /**
  * Parses admin-entered colour lines. Supported shapes:
@@ -182,7 +203,7 @@ export function mapProduct(row: Record<string, any>): Product {
     image: row.image_url,
     gallery: gallery.length ? gallery : [row.image_url],
     colors: parseColors(row.colors),
-    sizes: sizes.length ? sizes : ["38mm", "40mm", "42mm"],
+    sizes,
     movement: row.movement,
     case: row.case_material,
     strap: row.strap,
