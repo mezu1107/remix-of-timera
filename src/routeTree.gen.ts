@@ -50,6 +50,7 @@ import { Route as ApiPublicV1IndexRouteImport } from './routes/api/public/v1/ind
 import { Route as ApiPublicV1SettingsRouteImport } from './routes/api/public/v1/settings'
 import { Route as ApiPublicV1ReviewsRouteImport } from './routes/api/public/v1/reviews'
 import { Route as ApiPublicV1ProfileRouteImport } from './routes/api/public/v1/profile'
+import { Route as ApiPublicV1PaymentInstructionsRouteImport } from './routes/api/public/v1/payment-instructions'
 import { Route as ApiPublicV1HeroSlidesRouteImport } from './routes/api/public/v1/hero-slides'
 import { Route as ApiPublicV1HealthRouteImport } from './routes/api/public/v1/health'
 import { Route as ApiPublicV1DealsRouteImport } from './routes/api/public/v1/deals'
@@ -277,6 +278,12 @@ const ApiPublicV1ProfileRoute = ApiPublicV1ProfileRouteImport.update({
   path: '/api/public/v1/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicV1PaymentInstructionsRoute =
+  ApiPublicV1PaymentInstructionsRouteImport.update({
+    id: '/api/public/v1/payment-instructions',
+    path: '/api/public/v1/payment-instructions',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicV1HeroSlidesRoute = ApiPublicV1HeroSlidesRouteImport.update({
   id: '/api/public/v1/hero-slides',
   path: '/api/public/v1/hero-slides',
@@ -431,6 +438,7 @@ export interface FileRoutesByFullPath {
   '/api/public/v1/deals': typeof ApiPublicV1DealsRoute
   '/api/public/v1/health': typeof ApiPublicV1HealthRoute
   '/api/public/v1/hero-slides': typeof ApiPublicV1HeroSlidesRoute
+  '/api/public/v1/payment-instructions': typeof ApiPublicV1PaymentInstructionsRoute
   '/api/public/v1/profile': typeof ApiPublicV1ProfileRoute
   '/api/public/v1/reviews': typeof ApiPublicV1ReviewsRoute
   '/api/public/v1/settings': typeof ApiPublicV1SettingsRoute
@@ -494,6 +502,7 @@ export interface FileRoutesByTo {
   '/api/public/v1/deals': typeof ApiPublicV1DealsRoute
   '/api/public/v1/health': typeof ApiPublicV1HealthRoute
   '/api/public/v1/hero-slides': typeof ApiPublicV1HeroSlidesRoute
+  '/api/public/v1/payment-instructions': typeof ApiPublicV1PaymentInstructionsRoute
   '/api/public/v1/profile': typeof ApiPublicV1ProfileRoute
   '/api/public/v1/reviews': typeof ApiPublicV1ReviewsRoute
   '/api/public/v1/settings': typeof ApiPublicV1SettingsRoute
@@ -559,6 +568,7 @@ export interface FileRoutesById {
   '/api/public/v1/deals': typeof ApiPublicV1DealsRoute
   '/api/public/v1/health': typeof ApiPublicV1HealthRoute
   '/api/public/v1/hero-slides': typeof ApiPublicV1HeroSlidesRoute
+  '/api/public/v1/payment-instructions': typeof ApiPublicV1PaymentInstructionsRoute
   '/api/public/v1/profile': typeof ApiPublicV1ProfileRoute
   '/api/public/v1/reviews': typeof ApiPublicV1ReviewsRoute
   '/api/public/v1/settings': typeof ApiPublicV1SettingsRoute
@@ -625,6 +635,7 @@ export interface FileRouteTypes {
     | '/api/public/v1/deals'
     | '/api/public/v1/health'
     | '/api/public/v1/hero-slides'
+    | '/api/public/v1/payment-instructions'
     | '/api/public/v1/profile'
     | '/api/public/v1/reviews'
     | '/api/public/v1/settings'
@@ -688,6 +699,7 @@ export interface FileRouteTypes {
     | '/api/public/v1/deals'
     | '/api/public/v1/health'
     | '/api/public/v1/hero-slides'
+    | '/api/public/v1/payment-instructions'
     | '/api/public/v1/profile'
     | '/api/public/v1/reviews'
     | '/api/public/v1/settings'
@@ -752,6 +764,7 @@ export interface FileRouteTypes {
     | '/api/public/v1/deals'
     | '/api/public/v1/health'
     | '/api/public/v1/hero-slides'
+    | '/api/public/v1/payment-instructions'
     | '/api/public/v1/profile'
     | '/api/public/v1/reviews'
     | '/api/public/v1/settings'
@@ -802,6 +815,7 @@ export interface RootRouteChildren {
   ApiPublicV1DealsRoute: typeof ApiPublicV1DealsRoute
   ApiPublicV1HealthRoute: typeof ApiPublicV1HealthRoute
   ApiPublicV1HeroSlidesRoute: typeof ApiPublicV1HeroSlidesRoute
+  ApiPublicV1PaymentInstructionsRoute: typeof ApiPublicV1PaymentInstructionsRoute
   ApiPublicV1ProfileRoute: typeof ApiPublicV1ProfileRoute
   ApiPublicV1ReviewsRoute: typeof ApiPublicV1ReviewsRoute
   ApiPublicV1SettingsRoute: typeof ApiPublicV1SettingsRoute
@@ -1113,6 +1127,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicV1ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/v1/payment-instructions': {
+      id: '/api/public/v1/payment-instructions'
+      path: '/api/public/v1/payment-instructions'
+      fullPath: '/api/public/v1/payment-instructions'
+      preLoaderRoute: typeof ApiPublicV1PaymentInstructionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/v1/hero-slides': {
       id: '/api/public/v1/hero-slides'
       path: '/api/public/v1/hero-slides'
@@ -1329,6 +1350,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicV1DealsRoute: ApiPublicV1DealsRoute,
   ApiPublicV1HealthRoute: ApiPublicV1HealthRoute,
   ApiPublicV1HeroSlidesRoute: ApiPublicV1HeroSlidesRoute,
+  ApiPublicV1PaymentInstructionsRoute: ApiPublicV1PaymentInstructionsRoute,
   ApiPublicV1ProfileRoute: ApiPublicV1ProfileRoute,
   ApiPublicV1ReviewsRoute: ApiPublicV1ReviewsRoute,
   ApiPublicV1SettingsRoute: ApiPublicV1SettingsRoute,

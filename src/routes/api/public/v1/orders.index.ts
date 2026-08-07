@@ -158,28 +158,45 @@ export const Route = createFileRoute("/api/public/v1/orders/")({
         const client = user?.client ?? anonClient();
         const orderNumber = `TM-${Date.now().toString(36).toUpperCase()}`;
 
-        const { data, error } = await (client.from("orders") as any)
-          .insert({
-            order_number: orderNumber,
-            user_id: user?.id ?? null,
-            customer_name: name,
-            customer_email: email,
-            customer_phone: body.customer_phone?.trim() ?? null,
-            shipping_address: body.shipping_address?.trim() ?? null,
-            notes: body.notes?.trim() ?? null,
-            coupon_code: couponCode,
-            items,
-            subtotal,
-            discount,
-            shipping,
-            total,
-            status: "pending",
-          })
-          .select("id,order_number,total,status,created_at")
-          .maybeSingle();
+        const payload = {
+          order_number: orderNumber,
+          user_id: user?.id ?? null,
+          customer_name: name,
+          customer_email: email,
+          customer_phone: body.customer_phone?.trim() ?? null,
+          shipping_address: body.shipping_address?.trim() ?? null,
+          notes: body.notes?.trim() ?? null,
+          coupon_code: couponCode,
+          items,
+          subtotal,
+          discount,
+          shipping,
+          total,
+          status: "pending",
+        };
+
+        // Guests can insert but must not read the orders table, so only
+        // signed-in customers get a RETURNING clause.
+        if (user) {
+          const { data, error } = await (client.from("orders") as any)
+            .insert(payload)
+            .select("id,order_number,total,status,created_at")
+            .maybeSingle();
+          if (error) return apiError(error.message, 400);
+          return json({ ok: true, currency: "PKR", order: data }, 201);
+        }
+
+        const { error } = await (client.from("orders") as any).insert(payload);
         if (error) return apiError(error.message, 400);
 
-        return json({ ok: true, currency: "PKR", order: data }, 201);
+        return json(
+          {
+            ok: true,
+            currency: "PKR",
+            order: { order_number: orderNumber, total, status: "pending", created_at: new Date().toISOString() },
+          },
+          201,
+        );
       }),
     },
   },

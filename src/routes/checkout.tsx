@@ -39,6 +39,20 @@ function CheckoutPage() {
   const clear = useCart((s) => s.clear);
   const { data: coupons = [] } = useQuery(couponsQuery);
   const { data: settings } = useQuery(paymentSettingsQuery);
+  // Wallet / bank details are served from the server so only enabled methods are exposed.
+  const { data: payInfo } = useQuery({
+    queryKey: ["payment-instructions"],
+    staleTime: 5 * 60_000,
+    queryFn: async () => {
+      const res = await fetch("/api/public/v1/payment-instructions");
+      if (!res.ok) throw new Error("Failed to load payment details");
+      return (await res.json()) as {
+        easypaisa: { number: string | null; accountName: string | null } | null;
+        jazzcash: { number: string | null; accountName: string | null } | null;
+        bank: { bankName: string | null; accountTitle: string | null; accountNumber: string | null; iban: string | null } | null;
+      };
+    },
+  });
 
   const [couponInput, setCouponInput] = useState("");
   const [appliedCode, setAppliedCode] = useState<string | null>(() => {
@@ -80,9 +94,9 @@ function CheckoutPage() {
 
   const methods: { id: PayMethod; label: string; sub?: string }[] = [];
   if (settings?.codEnabled ?? true) methods.push({ id: "cod", label: "Cash on Delivery", sub: codExtra ? `+ ${formatPrice(codExtra)} handling` : "Pay in cash when your order arrives" });
-  if (settings?.easypaisaEnabled) methods.push({ id: "easypaisa", label: "Easypaisa", sub: settings?.easypaisaNumber ? `Send to ${settings.easypaisaNumber}` : undefined });
-  if (settings?.jazzcashEnabled) methods.push({ id: "jazzcash", label: "JazzCash", sub: settings?.jazzcashNumber ? `Send to ${settings.jazzcashNumber}` : undefined });
-  if (settings?.bankEnabled) methods.push({ id: "bank", label: "Bank Transfer", sub: settings?.bankName ?? undefined });
+  if (settings?.easypaisaEnabled) methods.push({ id: "easypaisa", label: "Easypaisa", sub: payInfo?.easypaisa?.number ? `Send to ${payInfo.easypaisa.number}` : undefined });
+  if (settings?.jazzcashEnabled) methods.push({ id: "jazzcash", label: "JazzCash", sub: payInfo?.jazzcash?.number ? `Send to ${payInfo.jazzcash.number}` : undefined });
+  if (settings?.bankEnabled) methods.push({ id: "bank", label: "Bank Transfer", sub: payInfo?.bank?.bankName ?? undefined });
   if (methods.length && !methods.some((m) => m.id === payMethod)) {
     // fallback if selected method got disabled while user was on page
     setTimeout(() => setPayMethod(methods[0].id), 0);
@@ -235,8 +249,8 @@ function CheckoutPage() {
             {payMethod === "easypaisa" && settings?.easypaisaEnabled && (
               <PayDetails
                 lines={[
-                  ["Easypaisa number", settings.easypaisaNumber ?? "—"],
-                  ["Account title", settings.easypaisaAccountName ?? "—"],
+                  ["Easypaisa number", payInfo?.easypaisa?.number ?? "Loading…"],
+                  ["Account title", payInfo?.easypaisa?.accountName ?? "Loading…"],
                 ]}
                 hint="Send the total amount and share the screenshot on WhatsApp after placing the order."
               />
@@ -244,8 +258,8 @@ function CheckoutPage() {
             {payMethod === "jazzcash" && settings?.jazzcashEnabled && (
               <PayDetails
                 lines={[
-                  ["JazzCash number", settings.jazzcashNumber ?? "—"],
-                  ["Account title", settings.jazzcashAccountName ?? "—"],
+                  ["JazzCash number", payInfo?.jazzcash?.number ?? "Loading…"],
+                  ["Account title", payInfo?.jazzcash?.accountName ?? "Loading…"],
                 ]}
                 hint="Send the total amount and share the screenshot on WhatsApp after placing the order."
               />
@@ -253,10 +267,10 @@ function CheckoutPage() {
             {payMethod === "bank" && settings?.bankEnabled && (
               <PayDetails
                 lines={[
-                  ["Bank", settings.bankName ?? "—"],
-                  ["Account title", settings.bankAccountTitle ?? "—"],
-                  ["Account number", settings.bankAccountNumber ?? "—"],
-                  ["IBAN", settings.bankIban ?? "—"],
+                  ["Bank", payInfo?.bank?.bankName ?? "Loading…"],
+                  ["Account title", payInfo?.bank?.accountTitle ?? "Loading…"],
+                  ["Account number", payInfo?.bank?.accountNumber ?? "Loading…"],
+                  ["IBAN", payInfo?.bank?.iban ?? "Loading…"],
                 ]}
                 hint="Transfer the total and share the deposit slip on WhatsApp after placing the order."
               />
