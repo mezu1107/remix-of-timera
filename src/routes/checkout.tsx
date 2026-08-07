@@ -249,8 +249,8 @@ function CheckoutPage() {
             {payMethod === "easypaisa" && settings?.easypaisaEnabled && (
               <PayDetails
                 lines={[
-                  ["Easypaisa number", settings.easypaisaNumber ?? "—"],
-                  ["Account title", settings.easypaisaAccountName ?? "—"],
+                  ["Easypaisa number", payInfo?.easypaisa?.number ?? "Loading…"],
+                  ["Account title", payInfo?.easypaisa?.accountName ?? "Loading…"],
                 ]}
                 hint="Send the total amount and share the screenshot on WhatsApp after placing the order."
               />
@@ -258,8 +258,8 @@ function CheckoutPage() {
             {payMethod === "jazzcash" && settings?.jazzcashEnabled && (
               <PayDetails
                 lines={[
-                  ["JazzCash number", settings.jazzcashNumber ?? "—"],
-                  ["Account title", settings.jazzcashAccountName ?? "—"],
+                  ["JazzCash number", payInfo?.jazzcash?.number ?? "Loading…"],
+                  ["Account title", payInfo?.jazzcash?.accountName ?? "Loading…"],
                 ]}
                 hint="Send the total amount and share the screenshot on WhatsApp after placing the order."
               />
@@ -267,10 +267,10 @@ function CheckoutPage() {
             {payMethod === "bank" && settings?.bankEnabled && (
               <PayDetails
                 lines={[
-                  ["Bank", settings.bankName ?? "—"],
-                  ["Account title", settings.bankAccountTitle ?? "—"],
-                  ["Account number", settings.bankAccountNumber ?? "—"],
-                  ["IBAN", settings.bankIban ?? "—"],
+                  ["Bank", payInfo?.bank?.bankName ?? "Loading…"],
+                  ["Account title", payInfo?.bank?.accountTitle ?? "Loading…"],
+                  ["Account number", payInfo?.bank?.accountNumber ?? "Loading…"],
+                  ["IBAN", payInfo?.bank?.iban ?? "Loading…"],
                 ]}
                 hint="Transfer the total and share the deposit slip on WhatsApp after placing the order."
               />
