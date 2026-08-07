@@ -39,6 +39,20 @@ function CheckoutPage() {
   const clear = useCart((s) => s.clear);
   const { data: coupons = [] } = useQuery(couponsQuery);
   const { data: settings } = useQuery(paymentSettingsQuery);
+  // Wallet / bank details are served from the server so only enabled methods are exposed.
+  const { data: payInfo } = useQuery({
+    queryKey: ["payment-instructions"],
+    staleTime: 5 * 60_000,
+    queryFn: async () => {
+      const res = await fetch("/api/public/v1/payment-instructions");
+      if (!res.ok) throw new Error("Failed to load payment details");
+      return (await res.json()) as {
+        easypaisa: { number: string | null; accountName: string | null } | null;
+        jazzcash: { number: string | null; accountName: string | null } | null;
+        bank: { bankName: string | null; accountTitle: string | null; accountNumber: string | null; iban: string | null } | null;
+      };
+    },
+  });
 
   const [couponInput, setCouponInput] = useState("");
   const [appliedCode, setAppliedCode] = useState<string | null>(() => {
