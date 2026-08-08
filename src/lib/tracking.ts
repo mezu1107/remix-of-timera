@@ -1,6 +1,11 @@
 import { supabase } from "@/integrations/supabase/client";
 import { initMetaPixel, metaTrack, metaTrackCustom, type MetaStandardEvent } from "@/lib/pixels/meta-pixel";
 import { googleAdsConversion, googleTrack, initGooglePixel } from "@/lib/pixels/google-pixel";
+import { tiktokTrack } from "@/lib/pixels/tiktok-pixel";
+import { snapTrack } from "@/lib/pixels/snapchat-pixel";
+import { pinterestTrack } from "@/lib/pixels/pinterest-pixel";
+import { bingTrack } from "@/lib/pixels/bing-pixel";
+import { linkedInTrack } from "@/lib/pixels/linkedin-pixel";
 
 export type TrackingEventName =
   | "page_view"
