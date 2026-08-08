@@ -1,6 +1,11 @@
 import { supabase } from "@/integrations/supabase/client";
 import { initMetaPixel, metaTrack, metaTrackCustom, type MetaStandardEvent } from "@/lib/pixels/meta-pixel";
 import { googleAdsConversion, googleTrack, initGooglePixel } from "@/lib/pixels/google-pixel";
+import { tiktokTrack } from "@/lib/pixels/tiktok-pixel";
+import { snapTrack } from "@/lib/pixels/snapchat-pixel";
+import { pinterestTrack } from "@/lib/pixels/pinterest-pixel";
+import { bingTrack } from "@/lib/pixels/bing-pixel";
+import { linkedInTrack } from "@/lib/pixels/linkedin-pixel";
 
 export type TrackingEventName =
   | "page_view"
@@ -107,6 +112,63 @@ const googleEventName: Record<TrackingEventName, string> = {
   sticky_buy_click: "select_item",
 };
 
+/** TikTok standard events. */
+const tiktokEventName: Partial<Record<TrackingEventName, string>> = {
+  page_view: "Pageview",
+  view_item: "ViewContent",
+  view_item_list: "ViewContent",
+  quick_view: "ViewContent",
+  add_to_cart: "AddToCart",
+  add_to_wishlist: "AddToWishlist",
+  begin_checkout: "InitiateCheckout",
+  add_payment_info: "AddPaymentInfo",
+  purchase: "CompletePayment",
+  search: "Search",
+  sign_up: "CompleteRegistration",
+  contact: "Contact",
+  whatsapp_click: "Contact",
+  newsletter_signup: "Subscribe",
+  upsell_add: "AddToCart",
+  sticky_buy_click: "ClickButton",
+};
+
+/** Snapchat standard events. */
+const snapEventName: Partial<Record<TrackingEventName, string>> = {
+  page_view: "PAGE_VIEW",
+  view_item: "VIEW_CONTENT",
+  view_item_list: "VIEW_CONTENT",
+  quick_view: "VIEW_CONTENT",
+  add_to_cart: "ADD_CART",
+  add_to_wishlist: "ADD_TO_WISHLIST",
+  begin_checkout: "START_CHECKOUT",
+  add_payment_info: "ADD_BILLING",
+  purchase: "PURCHASE",
+  search: "SEARCH",
+  sign_up: "SIGN_UP",
+  login: "LOGIN",
+  contact: "CUSTOM_EVENT_2",
+  whatsapp_click: "CUSTOM_EVENT_2",
+  newsletter_signup: "SUBSCRIBE",
+  upsell_add: "ADD_CART",
+};
+
+/** Pinterest standard events. */
+const pinterestEventName: Partial<Record<TrackingEventName, string>> = {
+  page_view: "pagevisit",
+  view_item: "pagevisit",
+  view_item_list: "viewcategory",
+  quick_view: "pagevisit",
+  add_to_cart: "addtocart",
+  begin_checkout: "checkout",
+  purchase: "checkout",
+  search: "search",
+  sign_up: "signup",
+  newsletter_signup: "lead",
+  contact: "lead",
+  whatsapp_click: "lead",
+  upsell_add: "addtocart",
+};
+
 /** Kept for backwards compatibility with existing imports. */
 export { initMetaPixel };
 export const initGoogleTag = initGooglePixel;
@@ -137,10 +199,47 @@ function fireBrowserPixels(name: TrackingEventName, payload: TrackingPayload) {
     item_name: payload.productName,
   });
 
+  // TikTok
+  tiktokTrack(tiktokEventName[name] ?? "ClickButton", {
+    content_id: payload.productId,
+    content_name: payload.productName,
+    content_type: payload.productId ? "product" : undefined,
+    value,
+    currency,
+  });
+
+  // Snapchat
+  snapTrack(snapEventName[name] ?? "CUSTOM_EVENT_1", {
+    item_ids: payload.productId ? [payload.productId] : undefined,
+    item_category: payload.productName,
+    price: value,
+    currency,
+    transaction_id: payload.orderNumber,
+  });
+
+  // Pinterest
+  pinterestTrack(pinterestEventName[name] ?? "custom", {
+    product_id: payload.productId,
+    product_name: payload.productName,
+    value,
+    currency,
+    order_id: payload.orderNumber,
+  });
+
+  // Microsoft / Bing UET
+  bingTrack(googleEventName[name], {
+    ecomm_prodid: payload.productId,
+    revenue_value: value,
+    currency,
+    transaction_id: payload.orderNumber,
+  });
+
   if (name === "purchase") {
     googleAdsConversion({ value, currency, transactionId: payload.orderNumber });
+    linkedInTrack(payload.metadata?.linkedInConversionId as string | undefined);
   }
 }
+
 
 function getSessionId() {
   const key = "timera-analytics-session";

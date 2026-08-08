@@ -18,8 +18,8 @@ export function CartDrawer() {
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
-      <SheetContent className="w-full sm:max-w-lg flex flex-col bg-background border-l border-border">
-        <SheetHeader className="border-b border-border/60 pb-4">
+      <SheetContent className="w-full sm:max-w-lg h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden bg-background border-l border-border p-4 sm:p-6">
+        <SheetHeader className="shrink-0 border-b border-border/60 pb-4">
           <SheetTitle className="font-serif text-2xl gold-text">Your Cart</SheetTitle>
           {subtotal > 0 && <FreeShipProgress subtotal={subtotal} className="mt-3" />}
         </SheetHeader>
@@ -39,7 +39,7 @@ export function CartDrawer() {
           </div>
         ) : (
           <>
-            <div className="flex-1 overflow-y-auto py-4 space-y-4">
+            <div className="flex-1 min-h-0 overflow-y-auto py-4 space-y-4">
               {items.map((item) => (
                 <div key={item.id} className="flex gap-4 pb-4 border-b border-border/40">
                   <div className="h-24 w-20 shrink-0 overflow-hidden rounded-md bg-card">
@@ -77,9 +77,11 @@ export function CartDrawer() {
               ))}
             </div>
 
-            <CartUpsell />
+            <div className="hidden sm:block shrink-0">
+              <CartUpsell />
+            </div>
 
-            <div className="border-t border-border/60 pt-4 space-y-4">
+            <div className="shrink-0 border-t border-border/60 pt-3 space-y-3">
               <div className="space-y-1.5 text-sm">
                 <div className="flex justify-between text-muted-foreground">
                   <span>Subtotal</span>
@@ -102,7 +104,7 @@ export function CartDrawer() {
               <Button variant="outline" asChild className="w-full" onClick={() => setOpen(false)}>
                 <Link to="/cart">View Full Cart</Link>
               </Button>
-              <TrustBadges className="!grid-cols-2 pt-1" />
+              <TrustBadges className="!grid-cols-2 pt-1 hidden sm:grid" />
             </div>
           </>
         )}

@@ -37,6 +37,14 @@ export type SiteSettings = {
   metaPixelId: string | null;
   googleTagId: string | null;
   googleAdsPurchaseLabel: string | null;
+  tiktokPixelId: string | null;
+  linkedinPartnerId: string | null;
+  snapchatPixelId: string | null;
+  pinterestTagId: string | null;
+  bingUetTagId: string | null;
+  bingSiteVerification: string | null;
+  googleSiteVerification: string | null;
+  pinterestSiteVerification: string | null;
 };
 
 const asStrings = (v: unknown): string[] =>
@@ -87,6 +95,14 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   metaPixelId: null,
   googleTagId: null,
   googleAdsPurchaseLabel: null,
+  tiktokPixelId: null,
+  linkedinPartnerId: null,
+  snapchatPixelId: null,
+  pinterestTagId: null,
+  bingUetTagId: null,
+  bingSiteVerification: null,
+  googleSiteVerification: null,
+  pinterestSiteVerification: null,
 };
 
 export function mapSiteSettings(r: Record<string, any> | null | undefined): SiteSettings {
@@ -125,6 +141,14 @@ export function mapSiteSettings(r: Record<string, any> | null | undefined): Site
     metaPixelId: r.meta_pixel_id ?? null,
     googleTagId: r.google_tag_id ?? null,
     googleAdsPurchaseLabel: r.google_ads_purchase_label ?? null,
+    tiktokPixelId: r.tiktok_pixel_id ?? null,
+    linkedinPartnerId: r.linkedin_partner_id ?? null,
+    snapchatPixelId: r.snapchat_pixel_id ?? null,
+    pinterestTagId: r.pinterest_tag_id ?? null,
+    bingUetTagId: r.bing_uet_tag_id ?? null,
+    bingSiteVerification: r.bing_site_verification ?? null,
+    googleSiteVerification: r.google_site_verification ?? null,
+    pinterestSiteVerification: r.pinterest_site_verification ?? null,
   };
 }
 
