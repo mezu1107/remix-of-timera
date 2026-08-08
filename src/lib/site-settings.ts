@@ -37,6 +37,14 @@ export type SiteSettings = {
   metaPixelId: string | null;
   googleTagId: string | null;
   googleAdsPurchaseLabel: string | null;
+  tiktokPixelId: string | null;
+  linkedinPartnerId: string | null;
+  snapchatPixelId: string | null;
+  pinterestTagId: string | null;
+  bingUetTagId: string | null;
+  bingSiteVerification: string | null;
+  googleSiteVerification: string | null;
+  pinterestSiteVerification: string | null;
 };
 
 const asStrings = (v: unknown): string[] =>
