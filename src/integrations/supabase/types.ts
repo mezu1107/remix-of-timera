@@ -110,6 +110,78 @@ export type Database = {
         }
         Relationships: []
       }
+      cart_leads: {
+        Row: {
+          address: string | null
+          cart_value: number
+          city: string | null
+          contacted: boolean
+          created_at: string
+          currency: string
+          email: string | null
+          id: string
+          item_count: number
+          items: Json
+          name: string | null
+          notes: string | null
+          order_number: string | null
+          page_path: string | null
+          phone: string | null
+          referrer: string | null
+          session_id: string
+          stage: string
+          updated_at: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          address?: string | null
+          cart_value?: number
+          city?: string | null
+          contacted?: boolean
+          created_at?: string
+          currency?: string
+          email?: string | null
+          id?: string
+          item_count?: number
+          items?: Json
+          name?: string | null
+          notes?: string | null
+          order_number?: string | null
+          page_path?: string | null
+          phone?: string | null
+          referrer?: string | null
+          session_id: string
+          stage?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          address?: string | null
+          cart_value?: number
+          city?: string | null
+          contacted?: boolean
+          created_at?: string
+          currency?: string
+          email?: string | null
+          id?: string
+          item_count?: number
+          items?: Json
+          name?: string | null
+          notes?: string | null
+          order_number?: string | null
+          page_path?: string | null
+          phone?: string | null
+          referrer?: string | null
+          session_id?: string
+          stage?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           active: boolean
@@ -362,6 +434,45 @@ export type Database = {
           title?: string
           title_accent?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      order_emails: {
+        Row: {
+          created_at: string
+          customer_name: string | null
+          error: string | null
+          id: string
+          order_id: string | null
+          order_number: string | null
+          recipient: string
+          status: string
+          subject: string
+          template: string
+        }
+        Insert: {
+          created_at?: string
+          customer_name?: string | null
+          error?: string | null
+          id?: string
+          order_id?: string | null
+          order_number?: string | null
+          recipient: string
+          status?: string
+          subject: string
+          template: string
+        }
+        Update: {
+          created_at?: string
+          customer_name?: string | null
+          error?: string | null
+          id?: string
+          order_id?: string | null
+          order_number?: string | null
+          recipient?: string
+          status?: string
+          subject?: string
+          template?: string
         }
         Relationships: []
       }
