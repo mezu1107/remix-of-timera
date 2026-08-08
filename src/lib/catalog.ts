@@ -131,9 +131,9 @@ export type BlogPost = {
   date: string;
 };
 
-/** Normalises jsonb text arrays, unwrapping values that were double-encoded by CSV imports. */
+/** Normalises jsonb text arrays, recursively unwrapping values double-encoded by imports. */
 const asArray = (v: unknown): string[] => {
-  const raw = Array.isArray(v) ? v : typeof v === "string" ? [v] : [];
+  const raw = Array.isArray(v) ? v.flat(Infinity) : typeof v === "string" ? [v] : [];
   const out: string[] = [];
   for (const item of raw) {
     if (typeof item !== "string") continue;
@@ -142,7 +142,7 @@ const asArray = (v: unknown): string[] => {
       try {
         const inner = JSON.parse(trimmed);
         if (Array.isArray(inner)) {
-          out.push(...inner.filter((x): x is string => typeof x === "string").map((x) => x.trim()));
+          out.push(...asArray(inner));
           continue;
         }
       } catch {
@@ -190,6 +190,8 @@ export const colorSlug = (name: string) =>
 export function mapProduct(row: Record<string, any>): Product {
   const gallery = asArray(row.gallery);
   const sizes = asArray(row.sizes);
+  const colors = parseColors(row.colors);
+  const image = typeof row.image_url === "string" ? row.image_url.trim() : "";
   return {
     id: row.id,
     slug: row.slug,
@@ -200,9 +202,9 @@ export function mapProduct(row: Record<string, any>): Product {
     price: Number(row.price),
     salePrice: row.sale_price != null ? Number(row.sale_price) : undefined,
     compareAt: row.compare_at ? Number(row.compare_at) : undefined,
-    image: row.image_url,
-    gallery: gallery.length ? gallery : [row.image_url],
-    colors: parseColors(row.colors),
+    image,
+    gallery: gallery.length ? gallery : image ? [image] : [],
+    colors: colors.length ? colors : [{ name: "Default", hex: "#1a1a1a" }],
     sizes,
     movement: row.movement,
     case: row.case_material,

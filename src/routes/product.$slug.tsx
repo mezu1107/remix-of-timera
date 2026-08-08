@@ -100,7 +100,9 @@ function ProductPage() {
   const navigate = useNavigate();
   // A colour can be opened directly, e.g. /product/nocturne?color=midnight-blue
   const initialColor =
-    product.colors.find((c) => colorSlug(c.name) === colorParam) ?? product.colors[0];
+    product.colors.find((c) => colorSlug(c.name) === colorParam) ??
+    product.colors[0] ??
+    { name: "Default", hex: "#1a1a1a" };
   const add = useCart((s) => s.add);
   const wish = useWishlist();
   const inWish = wish.ids.includes(product.id);
@@ -112,7 +114,7 @@ function ProductPage() {
   const [size, setSize] = useState<string | undefined>(product.sizes.length > 1 ? product.sizes[0] : undefined);
   const [qty, setQty] = useState(1);
 
-  const mainImage = colorImage ?? product.gallery[selectedImg];
+  const mainImage = colorImage ?? product.gallery[selectedImg] ?? product.image;
 
   const { data: allProducts = [] } = useQuery(productsQuery);
   const { data: productReviews = [] } = useQuery(reviewsQuery(product.id));
