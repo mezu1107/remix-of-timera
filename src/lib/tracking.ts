@@ -112,6 +112,63 @@ const googleEventName: Record<TrackingEventName, string> = {
   sticky_buy_click: "select_item",
 };
 
+/** TikTok standard events. */
+const tiktokEventName: Partial<Record<TrackingEventName, string>> = {
+  page_view: "Pageview",
+  view_item: "ViewContent",
+  view_item_list: "ViewContent",
+  quick_view: "ViewContent",
+  add_to_cart: "AddToCart",
+  add_to_wishlist: "AddToWishlist",
+  begin_checkout: "InitiateCheckout",
+  add_payment_info: "AddPaymentInfo",
+  purchase: "CompletePayment",
+  search: "Search",
+  sign_up: "CompleteRegistration",
+  contact: "Contact",
+  whatsapp_click: "Contact",
+  newsletter_signup: "Subscribe",
+  upsell_add: "AddToCart",
+  sticky_buy_click: "ClickButton",
+};
+
+/** Snapchat standard events. */
+const snapEventName: Partial<Record<TrackingEventName, string>> = {
+  page_view: "PAGE_VIEW",
+  view_item: "VIEW_CONTENT",
+  view_item_list: "VIEW_CONTENT",
+  quick_view: "VIEW_CONTENT",
+  add_to_cart: "ADD_CART",
+  add_to_wishlist: "ADD_TO_WISHLIST",
+  begin_checkout: "START_CHECKOUT",
+  add_payment_info: "ADD_BILLING",
+  purchase: "PURCHASE",
+  search: "SEARCH",
+  sign_up: "SIGN_UP",
+  login: "LOGIN",
+  contact: "CUSTOM_EVENT_2",
+  whatsapp_click: "CUSTOM_EVENT_2",
+  newsletter_signup: "SUBSCRIBE",
+  upsell_add: "ADD_CART",
+};
+
+/** Pinterest standard events. */
+const pinterestEventName: Partial<Record<TrackingEventName, string>> = {
+  page_view: "pagevisit",
+  view_item: "pagevisit",
+  view_item_list: "viewcategory",
+  quick_view: "pagevisit",
+  add_to_cart: "addtocart",
+  begin_checkout: "checkout",
+  purchase: "checkout",
+  search: "search",
+  sign_up: "signup",
+  newsletter_signup: "lead",
+  contact: "lead",
+  whatsapp_click: "lead",
+  upsell_add: "addtocart",
+};
+
 /** Kept for backwards compatibility with existing imports. */
 export { initMetaPixel };
 export const initGoogleTag = initGooglePixel;
