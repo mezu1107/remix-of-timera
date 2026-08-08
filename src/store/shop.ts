@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Product } from "@/lib/products";
 import { trackEvent } from "@/lib/tracking";
+import { captureLead } from "@/lib/leads";
 
 export type CartItem = {
   id: string;
@@ -40,20 +41,40 @@ export const useCart = create<CartState>()(
           const key = `${product.id}-${opts?.color ?? ""}-${opts?.size ?? ""}`;
           const existing = state.items.find((i) => i.id === key);
           if (existing) {
-            return {
+            const next = {
               items: state.items.map((i) =>
                 i.id === key ? { ...i, quantity: i.quantity + quantity } : i,
               ),
               isOpen: true,
             };
+            void captureLead({
+              stage: "add_to_cart",
+              items: next.items.map((i) => ({
+                name: i.product.name,
+                slug: i.product.slug,
+                quantity: i.quantity,
+                price: i.product.salePrice ?? i.product.price,
+              })),
+            });
+            return next;
           }
-          return {
+          const next = {
             items: [
               ...state.items,
               { id: key, product, quantity, color: opts?.color, size: opts?.size },
             ],
             isOpen: true,
           };
+          void captureLead({
+            stage: "add_to_cart",
+            items: next.items.map((i) => ({
+              name: i.product.name,
+              slug: i.product.slug,
+              quantity: i.quantity,
+              price: i.product.salePrice ?? i.product.price,
+            })),
+          });
+          return next;
         });
       },
       remove: (id) => set((s) => ({ items: s.items.filter((i) => i.id !== id) })),
