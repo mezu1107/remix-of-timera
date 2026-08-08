@@ -24,6 +24,7 @@ import {
   Wallet,
   Settings,
   HelpCircle,
+  UserSearch,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -61,6 +62,7 @@ const links = [
   { to: "/admin/blog", label: "Journal", icon: Newspaper },
   { to: "/admin/faqs", label: "FAQs", icon: HelpCircle },
   { to: "/admin/orders", label: "Orders", icon: Package },
+  { to: "/admin/leads", label: "Shopper Leads", icon: UserSearch },
   { to: "/admin/payments", label: "Payments & Delivery", icon: Wallet },
   { to: "/admin/trust", label: "Trust Centre", icon: ShieldCheck },
   { to: "/admin/settings", label: "Site Settings", icon: Settings },
