@@ -46,19 +46,28 @@ export const Route = createFileRoute("/product/$slug")({
       return { meta: [{ title: "Not found — Timera" }, { name: "robots", content: "noindex" }] };
     }
     const p = loaderData.product;
+    const base = (p.description ?? "").trim();
+    const metaDescription = (
+      base.length >= 50
+        ? base
+        : `${p.name} by ${p.brand} — ${p.movement} movement, ${p.case} case. ${base} Shop Timera watches with warranty, cash on delivery and insured shipping across Pakistan.`
+    )
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 155);
     return {
       meta: [
         { title: `${p.name} — ${p.brand} Watch | Timera` },
-        { name: "description", content: p.description.slice(0, 155) },
+        { name: "description", content: metaDescription },
         { name: "keywords", content: `${p.name}, ${p.brand}, ${p.collection} watch, ${p.movement}, ${p.case} watch, luxury watch, Timera` },
         { property: "og:title", content: `${p.name} — Timera` },
-        { property: "og:description", content: p.description.slice(0, 155) },
+        { property: "og:description", content: metaDescription },
         { property: "og:type", content: "product" },
-        { property: "og:url", content: `https://timera.store/product/${p.slug}` },
+        { property: "og:url", content: `https://timera-stores.lovable.app/product/${p.slug}` },
         { property: "og:image", content: p.image },
         { name: "twitter:image", content: p.image },
       ],
-      links: [{ rel: "canonical", href: `https://timera.store/product/${p.slug}` }],
+      links: [{ rel: "canonical", href: `https://timera-stores.lovable.app/product/${p.slug}` }],
       scripts: [
         {
           type: "application/ld+json",
