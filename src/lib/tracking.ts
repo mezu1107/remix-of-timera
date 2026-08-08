@@ -142,10 +142,47 @@ function fireBrowserPixels(name: TrackingEventName, payload: TrackingPayload) {
     item_name: payload.productName,
   });
 
+  // TikTok
+  tiktokTrack(tiktokEventName[name] ?? "ClickButton", {
+    content_id: payload.productId,
+    content_name: payload.productName,
+    content_type: payload.productId ? "product" : undefined,
+    value,
+    currency,
+  });
+
+  // Snapchat
+  snapTrack(snapEventName[name] ?? "CUSTOM_EVENT_1", {
+    item_ids: payload.productId ? [payload.productId] : undefined,
+    item_category: payload.productName,
+    price: value,
+    currency,
+    transaction_id: payload.orderNumber,
+  });
+
+  // Pinterest
+  pinterestTrack(pinterestEventName[name] ?? "custom", {
+    product_id: payload.productId,
+    product_name: payload.productName,
+    value,
+    currency,
+    order_id: payload.orderNumber,
+  });
+
+  // Microsoft / Bing UET
+  bingTrack(googleEventName[name], {
+    ecomm_prodid: payload.productId,
+    revenue_value: value,
+    currency,
+    transaction_id: payload.orderNumber,
+  });
+
   if (name === "purchase") {
     googleAdsConversion({ value, currency, transactionId: payload.orderNumber });
+    linkedInTrack(payload.metadata?.linkedInConversionId as string | undefined);
   }
 }
+
 
 function getSessionId() {
   const key = "timera-analytics-session";
