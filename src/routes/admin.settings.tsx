@@ -204,8 +204,38 @@ function SettingsAdmin() {
           <Field label="Google Ads purchase label" help="Optional conversion label for order purchases.">
             <Input value={f.google_ads_purchase_label ?? ""} onChange={(e) => set("google_ads_purchase_label", e.target.value)} placeholder="Conversion label" />
           </Field>
+          <Field label="TikTok Pixel ID" help="Example: D7IA94BC77U8DEPHHKSG">
+            <Input value={f.tiktok_pixel_id ?? ""} onChange={(e) => set("tiktok_pixel_id", e.target.value)} placeholder="TikTok Pixel ID" />
+          </Field>
+          <Field label="LinkedIn Partner ID" help="Insight Tag partner id, example: 1234567">
+            <Input value={f.linkedin_partner_id ?? ""} onChange={(e) => set("linkedin_partner_id", e.target.value)} placeholder="Partner ID" />
+          </Field>
+          <Field label="Snapchat Pixel ID" help="Snap Pixel id from Snapchat Ads Manager.">
+            <Input value={f.snapchat_pixel_id ?? ""} onChange={(e) => set("snapchat_pixel_id", e.target.value)} placeholder="Snap Pixel ID" />
+          </Field>
+          <Field label="Pinterest Tag ID" help="Example: 2612345678901">
+            <Input value={f.pinterest_tag_id ?? ""} onChange={(e) => set("pinterest_tag_id", e.target.value)} placeholder="Pinterest Tag ID" />
+          </Field>
+          <Field label="Microsoft / Bing UET Tag ID" help="From Microsoft Ads → UET tag, example: 123456789">
+            <Input value={f.bing_uet_tag_id ?? ""} onChange={(e) => set("bing_uet_tag_id", e.target.value)} placeholder="UET Tag ID" />
+          </Field>
         </Row2>
       </Card>
+
+      <Card title="Search engine verification">
+        <Row2>
+          <Field label="Bing Webmaster (msvalidate.01)" help="Paste only the content value of the meta tag.">
+            <Input value={f.bing_site_verification ?? ""} onChange={(e) => set("bing_site_verification", e.target.value)} placeholder="ABC123..." />
+          </Field>
+          <Field label="Google Search Console" help="google-site-verification content value.">
+            <Input value={f.google_site_verification ?? ""} onChange={(e) => set("google_site_verification", e.target.value)} placeholder="abc123..." />
+          </Field>
+          <Field label="Pinterest domain verify" help="p:domain_verify content value.">
+            <Input value={f.pinterest_site_verification ?? ""} onChange={(e) => set("pinterest_site_verification", e.target.value)} placeholder="abc123..." />
+          </Field>
+        </Row2>
+      </Card>
+
 
       <Card title="Limited-edition banner (home page)">
         <Toggle checked={!!f.feature_enabled} onChange={(v) => set("feature_enabled", v)} label="Show the banner with countdown" />
