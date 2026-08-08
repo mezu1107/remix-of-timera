@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.15"
   }
   public: {
     Tables: {
@@ -772,8 +772,6 @@ export type Database = {
       site_settings: {
         Row: {
           address: string | null
-          bing_site_verification: string | null
-          bing_uet_tag_id: string | null
           brand_name: string
           brand_suffix: string | null
           brand_tagline: string | null
@@ -794,20 +792,14 @@ export type Database = {
           featured_in: Json
           footer_links: Json
           google_ads_purchase_label: string | null
-          google_site_verification: string | null
           google_tag_id: string | null
           id: string
           instagram_url: string | null
-          linkedin_partner_id: string | null
           logo_url: string | null
           marquee_enabled: boolean
           marquee_items: Json
           meta_pixel_id: string | null
           nav_links: Json
-          pinterest_site_verification: string | null
-          pinterest_tag_id: string | null
-          snapchat_pixel_id: string | null
-          tiktok_pixel_id: string | null
           tiktok_url: string | null
           tracking_enabled: boolean
           updated_at: string
@@ -817,8 +809,6 @@ export type Database = {
         }
         Insert: {
           address?: string | null
-          bing_site_verification?: string | null
-          bing_uet_tag_id?: string | null
           brand_name?: string
           brand_suffix?: string | null
           brand_tagline?: string | null
@@ -839,20 +829,14 @@ export type Database = {
           featured_in?: Json
           footer_links?: Json
           google_ads_purchase_label?: string | null
-          google_site_verification?: string | null
           google_tag_id?: string | null
           id?: string
           instagram_url?: string | null
-          linkedin_partner_id?: string | null
           logo_url?: string | null
           marquee_enabled?: boolean
           marquee_items?: Json
           meta_pixel_id?: string | null
           nav_links?: Json
-          pinterest_site_verification?: string | null
-          pinterest_tag_id?: string | null
-          snapchat_pixel_id?: string | null
-          tiktok_pixel_id?: string | null
           tiktok_url?: string | null
           tracking_enabled?: boolean
           updated_at?: string
@@ -862,8 +846,6 @@ export type Database = {
         }
         Update: {
           address?: string | null
-          bing_site_verification?: string | null
-          bing_uet_tag_id?: string | null
           brand_name?: string
           brand_suffix?: string | null
           brand_tagline?: string | null
@@ -884,20 +866,14 @@ export type Database = {
           featured_in?: Json
           footer_links?: Json
           google_ads_purchase_label?: string | null
-          google_site_verification?: string | null
           google_tag_id?: string | null
           id?: string
           instagram_url?: string | null
-          linkedin_partner_id?: string | null
           logo_url?: string | null
           marquee_enabled?: boolean
           marquee_items?: Json
           meta_pixel_id?: string | null
           nav_links?: Json
-          pinterest_site_verification?: string | null
-          pinterest_tag_id?: string | null
-          snapchat_pixel_id?: string | null
-          tiktok_pixel_id?: string | null
           tiktok_url?: string | null
           tracking_enabled?: boolean
           updated_at?: string
