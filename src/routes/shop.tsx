@@ -86,6 +86,7 @@ function ShopPage() {
 
   const Filters = (
     <div className="space-y-8">
+      <h2 className="font-serif text-xl">Filter the collection</h2>
       <FilterGroup title="Price">
         <div className="px-1">
           <Slider

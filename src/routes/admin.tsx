@@ -31,7 +31,17 @@ export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
       { title: "Store Admin | Timera" },
-      { name: "description", content: "Timera store administration." },
+      {
+        name: "description",
+        content:
+          "Private Timera store dashboard for managing products, orders, deals, coupons, reviews and site settings. Staff access only.",
+      },
+      { property: "og:title", content: "Store Admin | Timera" },
+      {
+        property: "og:description",
+        content:
+          "Private Timera store dashboard for managing products, orders, deals, coupons, reviews and site settings. Staff access only.",
+      },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
