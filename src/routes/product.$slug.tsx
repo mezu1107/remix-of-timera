@@ -46,6 +46,7 @@ export const Route = createFileRoute("/product/$slug")({
       return { meta: [{ title: "Not found — Timera" }, { name: "robots", content: "noindex" }] };
     }
     const p = loaderData.product;
+    const shareImage = /^https:\/\//i.test(p.image) ? p.image : null;
     const base = (p.description ?? "").trim();
     const metaDescription = (
       base.length >= 50
@@ -64,8 +65,12 @@ export const Route = createFileRoute("/product/$slug")({
         { property: "og:description", content: metaDescription },
         { property: "og:type", content: "product" },
         { property: "og:url", content: `https://timera-stores.lovable.app/product/${p.slug}` },
-        { property: "og:image", content: p.image },
-        { name: "twitter:image", content: p.image },
+        ...(shareImage
+          ? [
+              { property: "og:image", content: shareImage },
+              { name: "twitter:image", content: shareImage },
+            ]
+          : []),
       ],
       links: [{ rel: "canonical", href: `https://timera-stores.lovable.app/product/${p.slug}` }],
       scripts: [
@@ -75,7 +80,7 @@ export const Route = createFileRoute("/product/$slug")({
             "@context": "https://schema.org",
             "@type": "Product",
             name: p.name,
-            image: p.image,
+            ...(shareImage ? { image: shareImage } : {}),
             description: p.description,
             brand: { "@type": "Brand", name: p.brand },
             aggregateRating: { "@type": "AggregateRating", ratingValue: p.rating, reviewCount: p.reviews },
@@ -100,7 +105,9 @@ function ProductPage() {
   const navigate = useNavigate();
   // A colour can be opened directly, e.g. /product/nocturne?color=midnight-blue
   const initialColor =
-    product.colors.find((c) => colorSlug(c.name) === colorParam) ?? product.colors[0];
+    product.colors.find((c) => colorSlug(c.name) === colorParam) ??
+    product.colors[0] ??
+    { name: "Default", hex: "#1a1a1a" };
   const add = useCart((s) => s.add);
   const wish = useWishlist();
   const inWish = wish.ids.includes(product.id);
@@ -112,7 +119,7 @@ function ProductPage() {
   const [size, setSize] = useState<string | undefined>(product.sizes.length > 1 ? product.sizes[0] : undefined);
   const [qty, setQty] = useState(1);
 
-  const mainImage = colorImage ?? product.gallery[selectedImg];
+  const mainImage = colorImage ?? product.gallery[selectedImg] ?? product.image;
 
   const { data: allProducts = [] } = useQuery(productsQuery);
   const { data: productReviews = [] } = useQuery(reviewsQuery(product.id));

@@ -2,14 +2,13 @@ import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouterState } from "@tanstack/react-router";
 import { siteSettingsQuery } from "@/lib/site-settings";
-import { initMetaPixel, metaTrack } from "@/lib/pixels/meta-pixel";
+import { initMetaPixel } from "@/lib/pixels/meta-pixel";
 import { initGooglePixel } from "@/lib/pixels/google-pixel";
 import { initTiktokPixel, tiktokPage } from "@/lib/pixels/tiktok-pixel";
 import { initLinkedInPixel } from "@/lib/pixels/linkedin-pixel";
 import { initSnapchatPixel, snapTrack } from "@/lib/pixels/snapchat-pixel";
 import { initPinterestPixel, pinterestPage } from "@/lib/pixels/pinterest-pixel";
 import { initBingPixel, setVerificationMeta } from "@/lib/pixels/bing-pixel";
-import { trackEvent } from "@/lib/tracking";
 
 export function TrackingPixels() {
   const { data: settings } = useQuery(siteSettingsQuery);
@@ -53,15 +52,13 @@ export function TrackingPixels() {
     setVerificationMeta("p:domain_verify", settings?.pinterestSiteVerification);
   }, [settings?.bingSiteVerification, settings?.googleSiteVerification, settings?.pinterestSiteVerification]);
 
-  // Route changes → page views on every network + internal analytics.
+  // Route changes → page views on auxiliary networks. Meta + internal analytics
+  // are fired once by AutoTracker/trackEvent to avoid duplicate conversion data.
   useEffect(() => {
-    const pagePath = `${location.pathname}${location.searchStr}`;
-    metaTrack("PageView", {});
     tiktokPage();
     pinterestPage();
     snapTrack("PAGE_VIEW", {});
-    if (settings?.trackingEnabled) void trackEvent("page_view", { pagePath });
-  }, [settings?.trackingEnabled, location.pathname, location.searchStr]);
+  }, [location.pathname, location.searchStr]);
 
   return null;
 }
