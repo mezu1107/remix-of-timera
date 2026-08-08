@@ -234,6 +234,7 @@ function CheckoutPage() {
 
       <form
         onSubmit={(e) => { e.preventDefault(); placeOrder.mutate(e.currentTarget); }}
+        onBlur={(e) => captureContact(e.currentTarget)}
         className="mt-8 grid gap-8 lg:mt-10 lg:grid-cols-[1.4fr_1fr] lg:gap-10"
       >
         <div className="min-w-0 space-y-8 lg:space-y-10">
