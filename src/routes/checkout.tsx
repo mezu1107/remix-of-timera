@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { CheckCircle2, Lock, Loader2, Truck, ShieldCheck, Gift } from "lucide-react";
 import { toast } from "sonner";
 import { trackEvent } from "@/lib/tracking";
+import { captureLead } from "@/lib/leads";
 import { OrderBump } from "@/components/conversion/OrderBump";
 import { FreeShipProgress } from "@/components/conversion/FreeShipProgress";
 import { TrustBadges } from "@/components/conversion/TrustBadges";
@@ -90,7 +91,33 @@ function CheckoutPage() {
         items: items.map((i) => ({ item_id: i.product.id, item_name: i.product.name, quantity: i.quantity, price: i.product.salePrice ?? i.product.price })),
       },
     });
+    void captureLead({
+      stage: "checkout_started",
+      cartValue: total,
+      items: items.map((i) => ({ name: i.product.name, slug: i.product.slug, quantity: i.quantity, price: i.product.salePrice ?? i.product.price })),
+    });
   }, [items, total]);
+
+  // Saves the shopper's contact details as soon as they type them, so the store
+  // can follow up even if the order is never completed.
+  const captureContact = (form: HTMLFormElement | null) => {
+    if (!form) return;
+    const fd = new FormData(form);
+    const get = (k: string) => String(fd.get(k) ?? "").trim();
+    const email = get("email");
+    const phone = get("phone");
+    if (!email && !phone) return;
+    void captureLead({
+      stage: "checkout_details",
+      cartValue: total,
+      email: email || null,
+      phone: phone || null,
+      name: `${get("first")} ${get("last")}`.trim() || null,
+      address: get("address") || null,
+      city: get("city") || null,
+      items: items.map((i) => ({ name: i.product.name, slug: i.product.slug, quantity: i.quantity, price: i.product.salePrice ?? i.product.price })),
+    });
+  };
 
   const methods: { id: PayMethod; label: string; sub?: string }[] = [];
   if (settings?.codEnabled ?? true) methods.push({ id: "cod", label: "Cash on Delivery", sub: codExtra ? `+ ${formatPrice(codExtra)} handling` : "Pay in cash when your order arrives" });
@@ -161,6 +188,7 @@ function CheckoutPage() {
           items: items.map((i) => ({ item_id: i.product.id, item_name: i.product.name, quantity: i.quantity, price: i.product.salePrice ?? i.product.price })),
         },
       });
+      void captureLead({ stage: "purchased", orderNumber: r.orderNumber, email: r.email, cartValue: total });
       setPlaced(r);
       clear();
       toast.success("Order placed — hamari team jald rabta kare gi.");
@@ -206,6 +234,7 @@ function CheckoutPage() {
 
       <form
         onSubmit={(e) => { e.preventDefault(); placeOrder.mutate(e.currentTarget); }}
+        onBlur={(e) => captureContact(e.currentTarget)}
         className="mt-8 grid gap-8 lg:mt-10 lg:grid-cols-[1.4fr_1fr] lg:gap-10"
       >
         <div className="min-w-0 space-y-8 lg:space-y-10">
