@@ -13,15 +13,15 @@ import { useCallback, useEffect, useState } from "react";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Timera — Luxury Quartz Watches Online | timera.store" },
-      { name: "description", content: "Shop Timera luxury watches: precision quartz, chronograph, dress and dive timepieces. Free insured worldwide shipping, 5-year warranty, 30-day returns." },
-      { name: "keywords", content: "Timera, luxury watches, quartz watches, chronograph, men's watches, women's watches, buy watches online, timera.store" },
-      { property: "og:title", content: "Timera — Luxury Quartz Watches Online | timera.store" },
-      { property: "og:description", content: "Shop Timera luxury watches: precision quartz, chronograph, dress and dive timepieces. Free insured worldwide shipping, 5-year warranty, 30-day returns." },
-      { property: "og:url", content: "https://timera.store/" },
+      { title: "Timera Watches Pakistan — Buy Luxury Quartz Watches Online" },
+      { name: "description", content: "Browse the full Timera watch collection: quartz chronograph, dress and dive timepieces with warranty, cash on delivery and fast insured shipping across Pakistan." },
+      { name: "keywords", content: "Timera, luxury watches Pakistan, quartz watches, chronograph, men's watches, women's watches, buy watches online" },
+      { property: "og:title", content: "Timera Watches Pakistan — Buy Luxury Quartz Watches Online" },
+      { property: "og:description", content: "Browse the full Timera watch collection: quartz chronograph, dress and dive timepieces with warranty, cash on delivery and fast insured shipping across Pakistan." },
+      { property: "og:url", content: "https://timera-stores.lovable.app/" },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://timera.store/" }],
+    links: [{ rel: "canonical", href: "https://timera-stores.lovable.app/" }],
     scripts: [
       {
         type: "application/ld+json",

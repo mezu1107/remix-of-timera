@@ -4,4 +4,4 @@ Disallow: /admin
 Disallow: /account
 Disallow: /checkout
 
-Sitemap: https://timera.store/sitemap.xml
+Sitemap: https://timera-stores.lovable.app/sitemap.xml

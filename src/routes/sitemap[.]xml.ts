@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 
-const BASE_URL = "https://timera.store";
+const BASE_URL = "https://timera-stores.lovable.app";
 
 interface SitemapEntry {
   path: string;
