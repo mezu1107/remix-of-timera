@@ -43,7 +43,7 @@ function ensureStub(): Ttq | null {
   ];
   ttq.setAndDefer = function (t: any, e: string) {
     t[e] = function (...args: unknown[]) {
-      t.push([e].concat(args));
+      t.push([e as unknown, ...args]);
     };
   };
   for (const m of ttq.methods) ttq.setAndDefer(ttq, m);
