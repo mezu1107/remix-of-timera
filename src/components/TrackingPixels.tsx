@@ -9,7 +9,6 @@ import { initLinkedInPixel } from "@/lib/pixels/linkedin-pixel";
 import { initSnapchatPixel, snapTrack } from "@/lib/pixels/snapchat-pixel";
 import { initPinterestPixel, pinterestPage } from "@/lib/pixels/pinterest-pixel";
 import { initBingPixel, setVerificationMeta } from "@/lib/pixels/bing-pixel";
-import { trackEvent } from "@/lib/tracking";
 
 export function TrackingPixels() {
   const { data: settings } = useQuery(siteSettingsQuery);
