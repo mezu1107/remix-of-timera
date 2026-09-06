@@ -41,6 +41,7 @@ import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminTrustRouteImport } from './routes/admin.trust'
+import { Route as AdminVideosRouteImport } from './routes/admin.videos'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
 import { Route as CollectionsSlugRouteImport } from './routes/collections.$slug'
@@ -235,6 +236,11 @@ const AdminSettingsRoute = AdminSettingsRouteImport.update({
 const AdminTrustRoute = AdminTrustRouteImport.update({
   id: '/trust',
   path: '/trust',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminVideosRoute = AdminVideosRouteImport.update({
+  id: '/videos',
+  path: '/videos',
   getParentRoute: () => AdminRoute,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
@@ -451,6 +457,7 @@ export interface FileRoutesByFullPath {
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/trust': typeof AdminTrustRoute
+  '/admin/videos': typeof AdminVideosRoute
   '/api/chat': typeof ApiChatRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/deals/$slug': typeof DealsSlugRoute
@@ -519,6 +526,7 @@ export interface FileRoutesByTo {
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/trust': typeof AdminTrustRoute
+  '/admin/videos': typeof AdminVideosRoute
   '/api/chat': typeof ApiChatRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/deals/$slug': typeof DealsSlugRoute
@@ -589,6 +597,7 @@ export interface FileRoutesById {
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/trust': typeof AdminTrustRoute
+  '/admin/videos': typeof AdminVideosRoute
   '/api/chat': typeof ApiChatRoute
   '/collections/$slug': typeof CollectionsSlugRoute
   '/deals/$slug': typeof DealsSlugRoute
@@ -660,6 +669,7 @@ export interface FileRouteTypes {
     | '/admin/reviews'
     | '/admin/settings'
     | '/admin/trust'
+    | '/admin/videos'
     | '/api/chat'
     | '/collections/$slug'
     | '/deals/$slug'
@@ -728,6 +738,7 @@ export interface FileRouteTypes {
     | '/admin/reviews'
     | '/admin/settings'
     | '/admin/trust'
+    | '/admin/videos'
     | '/api/chat'
     | '/collections/$slug'
     | '/deals/$slug'
@@ -797,6 +808,7 @@ export interface FileRouteTypes {
     | '/admin/reviews'
     | '/admin/settings'
     | '/admin/trust'
+    | '/admin/videos'
     | '/api/chat'
     | '/collections/$slug'
     | '/deals/$slug'
@@ -1115,6 +1127,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminTrustRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/videos': {
+      id: '/admin/videos'
+      path: '/videos'
+      fullPath: '/admin/videos'
+      preLoaderRoute: typeof AdminVideosRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -1379,6 +1398,7 @@ interface AdminRouteChildren {
   AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminTrustRoute: typeof AdminTrustRoute
+  AdminVideosRoute: typeof AdminVideosRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -1398,6 +1418,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminReviewsRoute: AdminReviewsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminTrustRoute: AdminTrustRoute,
+  AdminVideosRoute: AdminVideosRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
