@@ -81,6 +81,8 @@ export type HeroSlide = {
   ctaLabel: string | null;
   ctaHref: string | null;
   image: string;
+  /** MP4/WebM URL — if set, plays as muted autoplay loop instead of showing the image */
+  videoUrl: string | null;
 };
 
 export type Collection = {
@@ -322,7 +324,8 @@ export const heroSlidesQuery = queryOptions({
       description: r.description,
       ctaLabel: r.cta_label,
       ctaHref: r.cta_href,
-      image: absUrl(r.image_url),
+      image: absUrl(r.image_url ?? ""),
+      videoUrl: r.video_url ? absUrl(r.video_url) : null,
     }));
   },
 });

@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageField } from "@/components/admin/ImageField";
+import { VideoField } from "@/components/admin/VideoField";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
@@ -270,40 +271,37 @@ function SettingsAdmin() {
 
       <Card title="Homepage videos">
         <p className="text-sm text-muted-foreground mb-5">
-          Upload videos to Supabase Storage or any CDN, then paste the URL here.
-          Only sections with a real URL will appear on the homepage — empty fields are hidden automatically.
+          Drag &amp; drop videos from your phone or PC, or paste a URL.
+          Only sections with a real video will appear on the homepage.
         </p>
 
-        <Field label="Watch on Wrist — video URL" help="A lifestyle or wrist-shot video. MP4 recommended. Shows first on homepage.">
-          <Input
+        <Field label="Watch on Wrist" help="Lifestyle or wrist-shot video. Shows first. MP4 recommended.">
+          <VideoField
             value={f.video_wrist_url ?? ""}
-            onChange={(e) => set("video_wrist_url", e.target.value)}
-            placeholder="https://…/watch-on-wrist.mp4"
-            className="h-11"
+            onChange={(v) => set("video_wrist_url", v)}
+            folder="homepage-videos"
           />
         </Field>
-        <Field label="Watch on Wrist — section title" help="Optional. Defaults to 'See it in action' if empty.">
+        <Field label="Watch on Wrist — section title" help="Optional heading. Default: 'See it in action'">
           <Input value={f.video_wrist_title ?? ""} onChange={(e) => set("video_wrist_title", e.target.value)} placeholder="See it on the wrist" />
         </Field>
 
-        <Field label="Product Showcase — video URL" help="A product demo or close-up video. Shows second.">
-          <Input
+        <Field label="Product Showcase" help="Product demo or close-up video. Shows second.">
+          <VideoField
             value={f.video_showcase_url ?? ""}
-            onChange={(e) => set("video_showcase_url", e.target.value)}
-            placeholder="https://…/showcase.mp4"
-            className="h-11"
+            onChange={(v) => set("video_showcase_url", v)}
+            folder="homepage-videos"
           />
         </Field>
         <Field label="Product Showcase — section title">
           <Input value={f.video_showcase_title ?? ""} onChange={(e) => set("video_showcase_title", e.target.value)} placeholder="Crafted to impress" />
         </Field>
 
-        <Field label="Customer / UGC — video URL" help="A real customer video, unboxing or testimonial. Shows third.">
-          <Input
+        <Field label="Customer / UGC Video" help="Real customer video, unboxing or testimonial. Shows third.">
+          <VideoField
             value={f.video_ugc_url ?? ""}
-            onChange={(e) => set("video_ugc_url", e.target.value)}
-            placeholder="https://…/customer-video.mp4"
-            className="h-11"
+            onChange={(v) => set("video_ugc_url", v)}
+            folder="homepage-videos"
           />
         </Field>
         <Field label="Customer / UGC — section title">

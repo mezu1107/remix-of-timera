@@ -12,7 +12,7 @@ import { Pencil, Plus, Trash2, RefreshCw, Sparkles, Loader2, Download, CheckSqua
 import { toast } from "sonner";
 import { ImageField, ImagesField } from "./ImageField";
 import { ColorsField } from "./ColorsField";
-import { VideosField } from "./VideoField";
+import { VideoField, VideosField } from "./VideoField";
 
 export type FieldType =
   | "text"
@@ -23,6 +23,7 @@ export type FieldType =
   | "list"
   | "image"
   | "images"
+  | "video"
   | "videos"
   | "datetime"
   | "colors";
@@ -172,6 +173,7 @@ export function CrudModule({
           const v = row[f.key];
           if (f.type === "list" || f.type === "colors") return [f.key, Array.isArray(v) ? v.join("\n") : (v ?? "")];
           if (f.type === "images") return [f.key, Array.isArray(v) ? v : []];
+          if (f.type === "video") return [f.key, typeof v === "string" ? v : ""];
           if (f.type === "videos") return [f.key, Array.isArray(v) ? v : []];
           if (f.type === "datetime") return [f.key, toLocalInput(v)];
           return [f.key, v ?? emptyFor(f)];
@@ -194,6 +196,7 @@ export function CrudModule({
         if (f.type === "number") payload[f.key] = raw === "" || raw === null ? null : Number(raw);
         else if (f.type === "switch") payload[f.key] = !!raw;
         else if (f.type === "images") payload[f.key] = Array.isArray(raw) ? raw : [];
+        else if (f.type === "video") payload[f.key] = typeof raw === "string" ? raw || null : null;
         else if (f.type === "videos") payload[f.key] = Array.isArray(raw) ? raw : [];
         else if (f.type === "datetime") payload[f.key] = raw ? new Date(String(raw)).toISOString() : null;
         else if (f.type === "list" || f.type === "colors")
@@ -303,6 +306,13 @@ export function CrudModule({
         <Switch checked={!!form[f.key]} onCheckedChange={(v) => setForm((s) => ({ ...s, [f.key]: v }))} />
       ) : f.type === "image" ? (
         <ImageField value={String(form[f.key] ?? "")} onChange={(v) => setForm((s) => ({ ...s, [f.key]: v }))} />
+      ) : f.type === "video" ? (
+        <VideoField
+          value={String(form[f.key] ?? "")}
+          onChange={(v) => setForm((s) => ({ ...s, [f.key]: v }))}
+          help={f.help}
+          folder="videos"
+        />
       ) : f.type === "images" ? (
         <ImagesField
           value={Array.isArray(form[f.key]) ? form[f.key] : []}

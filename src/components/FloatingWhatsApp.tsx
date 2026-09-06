@@ -49,15 +49,16 @@ export function FloatingWhatsApp({ fallbackNumber = "" }: { fallbackNumber?: str
       aria-label="Chat with Timera on WhatsApp — Need help placing an order?"
       title="Need help? Chat with us on WhatsApp"
       className={[
-        // Position: above StickyBuyBar on mobile (bottom-[4.5rem] = ~72px),
-        // normal bottom-6 on desktop where StickyBuyBar is hidden
+        // On mobile: sit at bottom-6 — clear of browser chrome.
+        // StickyBuyBar (product page) adds its own padding-bottom via
+        // safe-area, so we don't need to push the WhatsApp button up globally.
         "fixed right-4 z-[55]",
-        "bottom-[4.5rem] lg:bottom-6",
+        "bottom-6",
         // Size and shape
         "flex h-14 w-14 items-center justify-center rounded-full shadow-lg",
-        // Color — WhatsApp green, no brand conflict
+        // Color
         "bg-[#25D366] text-white",
-        // Interaction — subtle scale only, no constant animation
+        // Interaction
         "transition-transform duration-200 hover:scale-105 active:scale-95",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2",
       ].join(" ")}
