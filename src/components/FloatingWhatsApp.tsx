@@ -23,11 +23,13 @@ function toWaNumber(raw: unknown) {
  * - right-4 keeps it inside the safe touch zone on small screens.
  * - Only rendered when a WhatsApp number is actually configured in site settings.
  */
-export function FloatingWhatsApp() {
+export function FloatingWhatsApp({ fallbackNumber = "" }: { fallbackNumber?: string }) {
   const { data: settings } = useQuery(siteSettingsQuery);
-  const number = toWaNumber(settings?.whatsappNumber ?? settings?.contactPhone);
+  const number =
+    toWaNumber(settings?.whatsappNumber ?? settings?.contactPhone) ||
+    toWaNumber(fallbackNumber);
 
-  // Don't render at all if no number is configured — avoids a dead link
+  // Don't render if no number at all
   if (!number) return null;
 
   const href = `https://wa.me/${number}?text=${encodeURIComponent(

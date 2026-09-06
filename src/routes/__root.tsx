@@ -177,7 +177,7 @@ function RootComponent() {
         <TrackingPixels />
         <AutoTracker />
         <AiAssistant />
-        <FloatingWhatsApp />
+        <FloatingWhatsApp fallbackNumber="" />
         <BackToTop />
         <LiveSalesToast />
         <ExitIntentOffer />
