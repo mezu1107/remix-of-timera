@@ -12,7 +12,7 @@
  */
 import { supabase } from "@/integrations/supabase/client";
 
-const BUCKET = "media";
+const BUCKET = "homepage-videos";
 
 /**
  * Uploads a File to Supabase Storage and returns the public URL.
