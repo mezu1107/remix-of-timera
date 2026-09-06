@@ -110,15 +110,8 @@ function HeroSlider() {
     return () => clearInterval(t);
   }, [count, next]);
 
-  if (!count) {
-    return (
-      <div className="flex h-[62vh] min-h-[460px] items-center justify-center bg-muted animate-pulse">
-        <p className="text-muted-foreground text-sm">
-          Add hero slides in Admin → Hero
-        </p>
-      </div>
-    );
-  }
+  
+  
 
   const slide = slides[Math.min(index, count - 1)];
   const warrantyMonths = paySettings?.warrantyMonths ?? 12;
