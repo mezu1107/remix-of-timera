@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { apiError, handle, json, preflight, readJson } from "@/lib/api.server";
-import { adminClient, hashUserData, loadMetaConfig, sendCapiEvent } from "@/lib/meta.server";
+import { anonClient, apiError, handle, json, preflight, readJson } from "@/lib/api.server";
+import { hashUserData, loadMetaConfig, sendCapiEvent } from "@/lib/meta.server";
 
 /**
  * Meta Conversions API bridge. Additive — no existing endpoint was changed.
@@ -59,7 +59,8 @@ export const Route = createFileRoute("/api/public/v1/meta/event")({
         const eventName = String(body.event_name ?? "").trim();
         if (!ALLOWED.has(eventName)) return apiError("Unsupported event_name");
 
-        const db = await adminClient();
+        const db = anonClient();
+
         const config = await loadMetaConfig();
 
         let eventId = String(body.event_id ?? "").slice(0, 120);
@@ -69,7 +70,7 @@ export const Route = createFileRoute("/api/public/v1/meta/event")({
         let userData = body.user_data ?? {};
         let orderId: string | null = null;
         let orderNumber: string | null = null;
-
+gi
         if (eventName === "Purchase") {
           orderNumber = String(body.order_number ?? "").trim().slice(0, 60);
           if (!orderNumber) return apiError("order_number is required for Purchase");
