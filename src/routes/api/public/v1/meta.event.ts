@@ -70,7 +70,7 @@ export const Route = createFileRoute("/api/public/v1/meta/event")({
         let userData = body.user_data ?? {};
         let orderId: string | null = null;
         let orderNumber: string | null = null;
-gi
+
         if (eventName === "Purchase") {
           orderNumber = String(body.order_number ?? "").trim().slice(0, 60);
           if (!orderNumber) return apiError("order_number is required for Purchase");
