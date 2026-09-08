@@ -2,28 +2,35 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 /**
- * Returns true when the signed-in user has the admin role.
+ * Checks whether the signed-in user has the admin role.
  *
- * Uses the SERVICE ROLE client (supabaseAdmin) to bypass Row Level Security.
- * This is safe because this function runs server-side only — the browser never
- * has direct access to supabaseAdmin.
+ * Uses ONLY the authenticated user's own Supabase session (context.supabase).
+ * No SUPABASE_SERVICE_ROLE_KEY required.
  *
- * Previous bug: the anon/user client was used to query user_roles. RLS on that
- * table blocked the read for users whose role row existed but couldn't be
- * read back through their own JWT — returning isAdmin: false incorrectly.
+ * The RLS migration (20260906000000_orders_rls_no_service_role.sql) adds:
+ *   CREATE POLICY "user_roles_select_own" ON public.user_roles
+ *     FOR SELECT TO authenticated USING (user_id = auth.uid());
  *
- * Bootstrap: if no admin row exists yet, the first authenticated caller
- * automatically becomes admin (owner setup flow).
+ * This means an authenticated user can read their own role row, which is
+ * all we need here. The policy ensures they can never read other users' roles.
+ *
+ * Bootstrap:
+ *   If no admin row exists yet (fresh install), the first authenticated user
+ *   automatically becomes admin. The RLS migration also adds:
+ *     CREATE POLICY "user_roles_insert_own" ON public.user_roles
+ *       FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
  */
 export const claimAdminAccess = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const userId = context.userId;
     if (!userId) return { isAdmin: false };
 
-    // Always use supabaseAdmin so RLS never blocks the role lookup
-    const { data: mine, error: mineError } = await supabaseAdmin
+    // Use the authenticated user's own session — RLS "user_roles_select_own"
+    // allows SELECT WHERE user_id = auth.uid()
+    const db = context.supabase;
+
+    const { data: mine, error: mineError } = await db
       .from("user_roles")
       .select("role")
       .eq("user_id", userId)
@@ -32,36 +39,34 @@ export const claimAdminAccess = createServerFn({ method: "POST" })
 
     if (mineError) {
       console.error("[admin-access] role check error:", mineError.message);
-      throw new Error("Unable to verify access");
+      throw new Error("Unable to verify access. Please try again.");
     }
 
-    // Row exists → confirmed admin
+    // Row found → confirmed admin
     if (mine) return { isAdmin: true };
 
-    // No admin row for this user — check if any admin exists at all
-    const { data: existing, error: existingError } = await supabaseAdmin
+    // ── Bootstrap: grant admin to the very first user ───────────────
+    // Check if any admin exists. We can only read our own role row,
+    // so instead attempt a count via a function or check indirectly.
+    // We use a try/insert approach: attempt to insert the admin row.
+    // If it succeeds → first admin. If it fails with a unique violation
+    // → someone else is already admin, this user is not.
+    const { error: insertError } = await db
       .from("user_roles")
-      .select("user_id")
-      .eq("role", "admin")
-      .limit(1);
+      .insert({ user_id: userId, role: "admin" });
 
-    if (existingError) {
-      console.error("[admin-access] admin count error:", existingError.message);
-      throw new Error("Unable to verify access");
-    }
-
-    // Bootstrap: no admins exist yet → grant admin to the first caller
-    if ((existing ?? []).length === 0) {
-      const { error: insertError } = await supabaseAdmin
-        .from("user_roles")
-        .insert({ user_id: userId, role: "admin" });
-      if (insertError) {
-        console.error("[admin-access] bootstrap insert error:", insertError.message);
-        throw new Error("Unable to verify access");
-      }
+    if (!insertError) {
+      // Insert succeeded → this user is now the first admin
       return { isAdmin: true };
     }
 
-    // An admin already exists and it's not this user
+    // Insert failed — either another admin already exists (23505 unique
+    // violation on the role row) or a permission error. In either case
+    // this user is not admin.
+    if (insertError.code !== "23505") {
+      // Not a unique violation — log it but don't crash
+      console.warn("[admin-access] bootstrap insert failed:", insertError.message);
+    }
+
     return { isAdmin: false };
   });

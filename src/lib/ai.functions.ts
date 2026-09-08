@@ -20,7 +20,7 @@ function parseJson<T>(text: string, fallback: T): T {
 /* AI semantic search — public                                         */
 /* ------------------------------------------------------------------ */
 export const aiSearchProducts = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => z.object({ query: z.string().min(2).max(300) }).parse(input))
+  .validator((input: unknown) => z.object({ query: z.string().min(2).max(300) }).parse(input))
   .handler(async ({ data }) => {
     const gateway = createLovableAiGatewayProvider(requireApiKey());
     const rows = await loadCatalogue();
@@ -48,7 +48,7 @@ export const aiSearchProducts = createServerFn({ method: "POST" })
 /* AI review summary — public                                          */
 /* ------------------------------------------------------------------ */
 export const aiReviewSummary = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => z.object({ productId: z.string().uuid() }).parse(input))
+  .validator((input: unknown) => z.object({ productId: z.string().uuid() }).parse(input))
   .handler(async ({ data }) => {
     const { data: reviews, error } = await publicSupabase()
       .from("reviews")
@@ -101,7 +101,7 @@ const CopyInput = z.object({
 
 export const aiWriteProductCopy = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => CopyInput.parse(input))
+  .validator((input: unknown) => CopyInput.parse(input))
   .handler(async ({ data, context }) => {
     const { data: adminRow } = await context.supabase
       .from("user_roles")
@@ -140,7 +140,7 @@ export const aiWriteProductCopy = createServerFn({ method: "POST" })
 /* ------------------------------------------------------------------ */
 export const aiExtractProducts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z.object({ text: z.string().min(20).max(120_000), source: z.string().max(200).optional() }).parse(input),
   )
   .handler(async ({ data, context }) => {

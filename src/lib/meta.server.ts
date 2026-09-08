@@ -1,7 +1,12 @@
 /**
  * META SERVER MODULE — Conversions API + Marketing API. Server-only.
  * Never imported by a component. Secrets are read inside functions.
+ *
+ * Uses only the normal Supabase publishable key (anonClient).
+ * No SUPABASE_SERVICE_ROLE_KEY required.
  */
+
+import { anonClient } from "@/lib/api.server";
 
 export type MetaConfig = {
   pixelId: string | null;
@@ -16,11 +21,6 @@ export type MetaConfig = {
 
 const DEFAULT_VERSION = "v21.0";
 
-export async function adminClient() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  return supabaseAdmin as any;
-}
-
 export function capiToken() {
   return process.env["META_CAPI_ACCESS_TOKEN"] ?? process.env["META_ACCESS_TOKEN"] ?? null;
 }
@@ -29,8 +29,14 @@ export function marketingToken() {
 }
 
 export async function loadMetaConfig(): Promise<MetaConfig> {
-  const db = await adminClient();
-  const { data } = await db.from("meta_settings").select("*").order("created_at").limit(1).maybeSingle();
+  // meta_settings is publicly readable (RLS grants SELECT to anon).
+  // anonClient() uses only the publishable key — no service role needed.
+  const { data } = await anonClient()
+    .from("meta_settings")
+    .select("*")
+    .order("created_at" as any)
+    .limit(1)
+    .maybeSingle();
   return {
     pixelId: data?.pixel_id ?? process.env["META_PIXEL_ID"] ?? null,
     adAccountId: data?.ad_account_id ?? process.env["META_AD_ACCOUNT_ID"] ?? null,
