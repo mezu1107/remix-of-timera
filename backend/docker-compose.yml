@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment: { POSTGRES_USER: timera, POSTGRES_PASSWORD: timera, POSTGRES_DB: timera }
+    volumes: [pgdata:/var/lib/postgresql/data]
+  api:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment: { DATABASE_URL: "postgresql+psycopg://timera:timera@db:5432/timera" }
+    ports: ["8000:8000"]
+    volumes: [./uploads:/app/uploads]
+    depends_on: [db]
+volumes: { pgdata: {} }

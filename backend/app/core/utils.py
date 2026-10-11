@@ -41,17 +41,21 @@ def to_dict(obj) -> dict:
     return out
 
 
-def coerce(model, data: dict, partial=True) -> dict:
+def coerce(model, data: dict, partial=True, allow_id=False) -> dict:
     """Keep only real columns and convert JSON strings to python values."""
     cols = {c.name: c for c in model.__table__.columns}
     attr_for = {a.columns[0].name: a.key for a in model.__mapper__.column_attrs}
     out = {}
     for k, v in data.items():
-        if k not in cols or k in PROTECTED or k == "password_hash":
+        if k not in cols or (k in PROTECTED and not allow_id) or k == "password_hash":
             continue
         kind = _kind(model, k)
         if v == "" and kind != "text":
             v = None
+        if v is not None and isinstance(v, str) and kind == "json":
+            import json as _j
+            try: v = _j.loads(v)
+            except ValueError: pass
         if v is not None:
             if kind == "datetime" and isinstance(v, str): v = datetime.fromisoformat(v.replace("Z", "+00:00"))
             elif kind == "date" and isinstance(v, str): v = date.fromisoformat(v[:10])
