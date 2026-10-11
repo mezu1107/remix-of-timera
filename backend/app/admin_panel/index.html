@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Timera Admin</title>
+<style>
+:root{--bg:#0e0e10;--card:#17171a;--line:#2a2a2f;--fg:#eee;--mut:#999;--acc:#c9a24a}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,Arial;background:var(--bg);color:var(--fg)}
+a{color:var(--acc)}button{background:var(--acc);color:#000;border:0;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:600}
+button.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}button.danger{background:#b33;color:#fff}
+input,select,textarea{width:100%;background:#0b0b0d;color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:8px}
+textarea{min-height:70px;font-family:monospace;font-size:12px}
+.wrap{display:flex;min-height:100vh}nav{width:220px;background:var(--card);border-right:1px solid var(--line);padding:16px;flex-shrink:0}
+nav a{display:block;padding:7px 10px;border-radius:6px;color:var(--fg);text-decoration:none;font-size:14px}nav a.on,nav a:hover{background:#26262b;color:var(--acc)}
+main{flex:1;padding:24px;overflow:auto}h1{margin:0 0 16px;font-size:22px}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}.kpi b{font-size:24px;display:block}
+.form{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}.form label{font-size:12px;color:var(--mut)}
+.bar{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}.mut{color:var(--mut)}
+#modal{position:fixed;inset:0;background:#000a;display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:30px}
+#modal .card{width:min(1000px,100%)}img.th{width:44px;height:44px;object-fit:cover;border-radius:4px}
+@media(max-width:800px){.wrap{flex-direction:column}nav{width:100%}}
+</style></head><body>
+<div id="app"></div>
+<div id="modal"><div class="card" id="mbody"></div></div>
+<script>
+const API = location.origin + "/api/v1";
+let TOKEN = localStorage.getItem("tm_admin_token"), SCHEMA = null;
+const $ = s => document.querySelector(s);
+const esc = v => String(v ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+async function api(path, opt = {}) {
+  const r = await fetch(API + path, {...opt, headers: {...(opt.body instanceof FormData ? {} : {"Content-Type":"application/json"}), ...(TOKEN ? {Authorization:"Bearer "+TOKEN} : {}), ...(opt.headers||{})}});
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401 || r.status === 403) { if (TOKEN) { logout(); } throw new Error(j.detail || "Not allowed"); }
+  if (!r.ok) throw new Error(typeof j.detail === "string" ? j.detail : JSON.stringify(j.detail || j));
+  return j;
+}
+function logout(){ TOKEN=null; localStorage.removeItem("tm_admin_token"); render(); }
+
+const MENU = [["dashboard","Dashboard"],["orders","Orders"],["products","Products"],["collections","Collections"],["categories","Categories"],
+ ["deals","Deals"],["coupons","Coupons"],["hero_slides","Hero slides"],["popups","Popups"],["reviews","Reviews"],["blog_posts","Blog"],
+ ["faqs","FAQs"],["trust_sections","Trust"],["cart_leads","Leads"],["order_emails","Emails sent"],["analytics_events","Analytics events"],
+ ["meta_event_log","Meta events"],["profiles","Customers"],["users","Users & roles"],["site_settings","Site settings"],
+ ["payment_settings","Payment settings"],["meta_settings","Meta settings"]];
+
+function loginView(){
+  $("#app").innerHTML = `<div style="max-width:360px;margin:12vh auto" class="card"><h1>Timera Admin</h1>
+  <p><input id="em" placeholder="Email"></p><p><input id="pw" type="password" placeholder="Password"></p>
+  <button id="go">Sign in</button><p id="err" style="color:#e66"></p></div>`;
+  $("#go").onclick = async () => {
+    try { const j = await api("/auth/login",{method:"POST",body:JSON.stringify({email:$("#em").value,password:$("#pw").value})});
+      if (!j.roles.some(r => r==="admin"||r==="staff")) throw new Error("This account is not an admin");
+      TOKEN=j.token; localStorage.setItem("tm_admin_token",TOKEN); render();
+    } catch(e){ $("#err").textContent = e.message; }
+  };
+}
+async function render(){
+  if (!TOKEN) return loginView();
+  if (!SCHEMA) { try { SCHEMA = (await api("/admin/schema")).schema; } catch(e){ return; } }
+  const page = location.hash.slice(1) || "dashboard";
+  $("#app").innerHTML = `<div class="wrap"><nav><h3 style="color:var(--acc)">TIMERA</h3>${MENU.map(([k,l])=>`<a href="#${k}" class="${k===page?"on":""}">${l}</a>`).join("")}
+  <p><button class="ghost" onclick="logout()">Sign out</button></p></nav><main id="main">Loading…</main></div>`;
+  try {
+    if (page==="dashboard") await dashboard();
+    else if (page==="orders") await orders();
+    else if (page==="users") await users();
+    else if (SCHEMA[page]?.singleton) await singleton(page);
+    else await crud(page);
+  } catch(e){ $("#main").innerHTML = `<p style="color:#e66">${esc(e.message)}</p>`; }
+}
+window.onhashchange = render;
+
+async function dashboard(){
+  const s = await api("/admin/stats?days=30");
+  const k = (l,v) => `<div class="card kpi"><span class="mut">${l}</span><b>${v}</b></div>`;
+  $("#main").innerHTML = `<h1>Dashboard (last 30 days)</h1><div class="grid">
+   ${k("Revenue","Rs "+Math.round(s.revenue).toLocaleString())}${k("Orders",s.orders)}${k("Avg order","Rs "+Math.round(s.aov).toLocaleString())}
+   ${k("Products",s.products)}${k("Customers",s.customers)}${k("Open leads",s.leads)}</div>
+   <h3>Orders by status</h3><div class="grid">${Object.entries(s.by_status).map(([a,b])=>k(a,b)).join("")||"<span class='mut'>No orders yet</span>"}</div>
+   <h3>Funnel</h3><div class="grid">${Object.entries(s.funnel).map(([a,b])=>k(a,b)).join("")}</div>`;
+}
+
+const STATUSES = ["pending","confirmed","processing","shipped","delivered","cancelled"];
+async function orders(){
+  const f = new URLSearchParams(location.search).get("s") || "";
+  const {orders} = await api("/admin/orders");
+  $("#main").innerHTML = `<h1>Orders (${orders.length})</h1><table><tr><th>#</th><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th></th></tr>
+  ${orders.map(o=>`<tr><td>${esc(o.order_number)}</td><td>${new Date(o.created_at).toLocaleString()}</td>
+   <td>${esc(o.customer_name)}<br><span class="mut">${esc(o.customer_email)}<br>${esc(o.customer_phone)}<br>${esc(o.shipping_address)} ${esc(o.city)}</span></td>
+   <td>${(o.items||[]).map(i=>esc(i.name)+" × "+i.quantity).join("<br>")}</td><td>Rs ${Math.round(o.total).toLocaleString()}<br><span class="mut">${esc(o.payment_method)}</span></td>
+   <td><select data-id="${o.id}" class="st">${STATUSES.map(s=>`<option ${s===o.status?"selected":""}>${s}</option>`).join("")}</select>
+   <input placeholder="Courier" value="${esc(o.courier)}" data-c="${o.id}" style="margin-top:4px"><input placeholder="Tracking #" value="${esc(o.tracking_number)}" data-t="${o.id}" style="margin-top:4px"></td>
+   <td><button data-save="${o.id}">Save</button><br><br><button class="ghost" data-mail="${o.id}">Resend email</button></td></tr>`).join("")}</table>`;
+  document.querySelectorAll("[data-save]").forEach(b=>b.onclick=async()=>{
+    const id=b.dataset.save;
+    await api("/admin/orders/"+id,{method:"PATCH",body:JSON.stringify({status:$(`.st[data-id="${id}"]`).value,courier:$(`[data-c="${id}"]`).value,tracking_number:$(`[data-t="${id}"]`).value})});
+    alert("Saved. Customer email is sent automatically for confirmed / shipped / delivered / cancelled.");
+  });
+  document.querySelectorAll("[data-mail]").forEach(b=>b.onclick=async()=>{
+    const t = prompt("Template (placed, confirmed, processing, shipped, delivered, cancelled)","placed"); if(!t) return;
+    await api(`/admin/orders/${b.dataset.mail}/email`,{method:"POST",body:JSON.stringify({template:t})}); alert("Email queued — check 'Emails sent'.");
+  });
+}
+
+const LISTCOLS = ["image_url","name","title","code","question","heading","customer_name","event_name","email","recipient","subject","stage","status","price","active","approved","created_at"];
+async function crud(name){
+  const meta = SCHEMA[name]; const {rows} = await api("/admin/r/"+name);
+  const cols = LISTCOLS.filter(c => meta.columns.some(x=>x.name===c)).slice(0,6);
+  $("#main").innerHTML = `<h1>${esc(name.replace(/_/g," "))} (${rows.length})</h1>
+   <div class="bar">${meta.readonly?"":`<button id="add">+ Add new</button>`}<input id="q" placeholder="Search…" style="max-width:260px"></div>
+   <table id="tbl"><tr>${cols.map(c=>`<th>${c}</th>`).join("")}<th></th></tr>
+   ${rows.map((r,i)=>`<tr data-txt="${esc(JSON.stringify(r).toLowerCase())}">${cols.map(c=>`<td>${c==="image_url"&&r[c]?`<img class="th" src="${esc(r[c])}">`:esc(typeof r[c]==="object"?JSON.stringify(r[c]):r[c]).slice(0,80)}</td>`).join("")}
+   <td><button class="ghost" data-i="${i}">${meta.readonly?"View":"Edit"}</button></td></tr>`).join("")}</table>`;
+  $("#q").oninput = e => document.querySelectorAll("#tbl tr[data-txt]").forEach(tr=>tr.style.display=tr.dataset.txt.includes(e.target.value.toLowerCase())?"":"none");
+  if ($("#add")) $("#add").onclick = () => editor(name, {});
+  document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>editor(name, rows[b.dataset.i]));
+}
+function field(c, v, ro){
+  const id = "f_"+c.name, dis = ro || ["id","created_at","updated_at"].includes(c.name) ? "disabled" : "";
+  let inp;
+  if (c.kind==="bool") inp = `<select id="${id}" ${dis}><option value="true" ${v?"selected":""}>true</option><option value="false" ${!v?"selected":""}>false</option></select>`;
+  else if (c.kind==="json") inp = `<textarea id="${id}" ${dis}>${esc(v==null?"":JSON.stringify(v,null,1))}</textarea>`;
+  else if (["description","content","body","answer","message","notes","excerpt"].includes(c.name)) inp = `<textarea id="${id}" ${dis}>${esc(v)}</textarea>`;
+  else inp = `<input id="${id}" ${dis} value="${esc(v)}" type="${c.kind==="int"||c.kind==="num"?"number":"text"}" step="any">`;
+  const up = !dis && /(image|logo|_url)$/.test(c.name) ? `<input type="file" data-up="${id}" style="margin-top:4px">` : "";
+  return `<div><label>${c.name}${c.required?" *":""}</label>${inp}${up}</div>`;
+}
+function collect(cols){
+  const out = {};
+  for (const c of cols){ const el = $("#f_"+c.name); if (!el || el.disabled) continue; let v = el.value;
+    if (c.kind==="bool") v = v==="true"; else if (c.kind==="json") { try { v = v.trim()?JSON.parse(v):null; } catch { throw new Error(c.name+": invalid JSON"); } }
+    else if (c.kind==="int"||c.kind==="num") v = v===""?null:Number(v); else if (v==="") v = null;
+    out[c.name] = v; }
+  return out;
+}
+function bindUploads(){
+  document.querySelectorAll("[data-up]").forEach(f=>f.onchange=async()=>{
+    const fd = new FormData(); fd.append("file", f.files[0]); f.disabled = true;
+    try { const j = await api("/admin/upload",{method:"POST",body:fd}); $("#"+f.dataset.up).value = j.url; } catch(e){ alert(e.message); }
+    f.disabled = false;
+  });
+}
+function editor(name, row){
+  const meta = SCHEMA[name], ro = meta.readonly;
+  $("#mbody").innerHTML = `<h2>${row.id?(ro?"View":"Edit"):"New"} — ${esc(name)}</h2><div class="form">${meta.columns.map(c=>field(c,row[c.name],ro)).join("")}</div>
+   <div class="bar" style="margin-top:16px">${ro?"":`<button id="sv">Save</button>`}${row.id&&!ro?`<button class="danger" id="del">Delete</button>`:""}<button class="ghost" id="cl">Close</button></div>`;
+  $("#modal").style.display="flex"; bindUploads();
+  $("#cl").onclick = () => $("#modal").style.display="none";
+  if ($("#sv")) $("#sv").onclick = async () => { try {
+      const body = collect(meta.columns);
+      await api("/admin/r/"+name+(row.id?"/"+row.id:""),{method:row.id?"PUT":"POST",body:JSON.stringify(body)});
+      $("#modal").style.display="none"; render(); } catch(e){ alert(e.message); } };
+  if ($("#del")) $("#del").onclick = async () => { if(!confirm("Delete?")) return; await api(`/admin/r/${name}/${row.id}`,{method:"DELETE"}); $("#modal").style.display="none"; render(); };
+}
+async function singleton(name){
+  const {row} = await api("/admin/settings/"+name); const cols = SCHEMA[name].columns;
+  $("#main").innerHTML = `<h1>${esc(name.replace(/_/g," "))}</h1><div class="form">${cols.map(c=>field(c,row[c.name])).join("")}</div><p><button id="sv">Save settings</button></p>`;
+  bindUploads();
+  $("#sv").onclick = async () => { try { await api("/admin/settings/"+name,{method:"PUT",body:JSON.stringify(collect(cols))}); alert("Saved"); } catch(e){ alert(e.message); } };
+}
+async function users(){
+  const {users} = await api("/admin/users");
+  $("#main").innerHTML = `<h1>Users & roles</h1><table><tr><th>Email</th><th>Joined</th><th>Roles</th><th></th></tr>
+  ${users.map(u=>`<tr><td>${esc(u.email)}</td><td>${new Date(u.created_at).toLocaleDateString()}</td><td>${u.roles.join(", ")}</td>
+  <td><button class="ghost" data-g="${u.id}">${u.roles.includes("admin")?"Remove admin":"Make admin"}</button></td></tr>`).join("")}</table>`;
+  document.querySelectorAll("[data-g]").forEach(b=>b.onclick=async()=>{ try {
+    await api(`/admin/users/${b.dataset.g}/role`,{method:"POST",body:JSON.stringify({role:"admin",grant:b.textContent==="Make admin"})}); render(); } catch(e){ alert(e.message); } });
+}
+render();
+</script></body></html>
