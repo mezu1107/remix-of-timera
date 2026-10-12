@@ -1,6 +1,6 @@
 # Timera Backend (FastAPI)
 
-Standalone backend + admin panel. No TanStack, no Lovable.
+Standalone FastAPI app: customer website at `/`, admin panel at `/admin`, API at `/api/v1`.
 
 ## Folders
 - `app/main.py` – app entry, mounts routers, `/uploads` and `/admin`

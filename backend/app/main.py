@@ -29,6 +29,9 @@ def admin_panel(path: str = ""):
     return FileResponse(ADMIN_HTML)
 
 
+STORE_HTML = os.path.join(os.path.dirname(__file__), "storefront", "index.html")
+
+
 @app.get("/", include_in_schema=False)
-def root():
-    return {"ok": True, "name": settings.APP_NAME, "docs": "/docs", "admin": "/admin"}
+def storefront():
+    return FileResponse(STORE_HTML)
