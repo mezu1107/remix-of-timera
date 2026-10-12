@@ -1,0 +1,8 @@
+{
+  "name": "timera",
+  "private": true,
+  "scripts": {
+    "dev": "sh .lovable/dev",
+    "build": "echo 'Python app - nothing to build'"
+  }
+}
