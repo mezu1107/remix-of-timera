@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.15"
   }
   public: {
     Tables: {
@@ -681,6 +681,7 @@ export type Database = {
           first_utm_source: string | null
           first_utm_term: string | null
           id: string
+          idempotency_key: string | null
           items: Json
           last_touch_at: string | null
           last_utm_campaign: string | null
@@ -703,6 +704,11 @@ export type Database = {
           tracking_number: string | null
           updated_at: string
           user_id: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
         }
         Insert: {
           attribution?: Json
@@ -725,6 +731,7 @@ export type Database = {
           first_utm_source?: string | null
           first_utm_term?: string | null
           id?: string
+          idempotency_key?: string | null
           items?: Json
           last_touch_at?: string | null
           last_utm_campaign?: string | null
@@ -747,6 +754,11 @@ export type Database = {
           tracking_number?: string | null
           updated_at?: string
           user_id?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Update: {
           attribution?: Json
@@ -769,6 +781,7 @@ export type Database = {
           first_utm_source?: string | null
           first_utm_term?: string | null
           id?: string
+          idempotency_key?: string | null
           items?: Json
           last_touch_at?: string | null
           last_utm_campaign?: string | null
@@ -791,6 +804,11 @@ export type Database = {
           tracking_number?: string | null
           updated_at?: string
           user_id?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Relationships: []
       }
@@ -975,6 +993,7 @@ export type Database = {
           strap: string
           top_notes: Json
           updated_at: string
+          videos: Json | null
           water_resistance: string
         }
         Insert: {
@@ -1019,6 +1038,7 @@ export type Database = {
           strap?: string
           top_notes?: Json
           updated_at?: string
+          videos?: Json | null
           water_resistance?: string
         }
         Update: {
@@ -1063,6 +1083,7 @@ export type Database = {
           strap?: string
           top_notes?: Json
           updated_at?: string
+          videos?: Json | null
           water_resistance?: string
         }
         Relationships: []
@@ -1190,6 +1211,12 @@ export type Database = {
           tiktok_url: string | null
           tracking_enabled: boolean
           updated_at: string
+          video_showcase_title: string | null
+          video_showcase_url: string | null
+          video_ugc_title: string | null
+          video_ugc_url: string | null
+          video_wrist_title: string | null
+          video_wrist_url: string | null
           warranty_years: number
           whatsapp_number: string | null
           youtube_url: string | null
@@ -1227,6 +1254,12 @@ export type Database = {
           tiktok_url?: string | null
           tracking_enabled?: boolean
           updated_at?: string
+          video_showcase_title?: string | null
+          video_showcase_url?: string | null
+          video_ugc_title?: string | null
+          video_ugc_url?: string | null
+          video_wrist_title?: string | null
+          video_wrist_url?: string | null
           warranty_years?: number
           whatsapp_number?: string | null
           youtube_url?: string | null
@@ -1264,6 +1297,12 @@ export type Database = {
           tiktok_url?: string | null
           tracking_enabled?: boolean
           updated_at?: string
+          video_showcase_title?: string | null
+          video_showcase_url?: string | null
+          video_ugc_title?: string | null
+          video_ugc_url?: string | null
+          video_wrist_title?: string | null
+          video_wrist_url?: string | null
           warranty_years?: number
           whatsapp_number?: string | null
           youtube_url?: string | null
