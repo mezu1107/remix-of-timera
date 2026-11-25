@@ -360,6 +360,7 @@ function CheckoutPage() {
           event_name: "Purchase",
           event_id: r.eventId,
           order_number: r.orderNumber,
+          user_data: { email: r.email },
           browser_sent: true,
           event_source_url: typeof window !== "undefined" ? window.location.href : undefined,
         }),

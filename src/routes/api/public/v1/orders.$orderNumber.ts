@@ -45,20 +45,20 @@ export const Route = createFileRoute("/api/public/v1/orders/$orderNumber")({
           );
         }
 
-        // RLS "orders_select_guest_lookup": anon may SELECT rows where user_id IS NULL.
-        // We further filter by order_number + customer_email so each guest can only
-        // ever retrieve their own specific order.
-        const { data, error } = await anonClient()
-          .from("orders")
-          .select(ORDER_FIELDS)
-          .eq("order_number", orderNumber)
-          .ilike("customer_email", email)
-          .is("user_id", null)
-          .maybeSingle();
+        // The database function checks both credentials and returns only the
+        // matching order; anonymous users never receive table-wide order access.
+        const { data, error } = await (anonClient() as any).rpc("lookup_order_by_email", {
+          p_order_number: orderNumber,
+          p_customer_email: email,
+        });
 
         if (error) return apiError(error.message, 500);
-        if (!data) return apiError("Order not found", 404);
-        return json({ ok: true, currency: "PKR", order: data });
+        const row = Array.isArray(data) ? data[0] : data;
+        if (!row) return apiError("Order not found", 404);
+        const order = Object.fromEntries(
+          ORDER_FIELDS.split(",").map((field) => [field, row[field]]),
+        );
+        return json({ ok: true, currency: "PKR", order });
       }),
     },
   },

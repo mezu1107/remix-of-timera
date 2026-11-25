@@ -74,13 +74,15 @@ export const Route = createFileRoute("/api/public/v1/meta/event")({
         if (eventName === "Purchase") {
           orderNumber = String(body.order_number ?? "").trim().slice(0, 60);
           if (!orderNumber) return apiError("order_number is required for Purchase");
+          const orderEmail = String(body.user_data?.email ?? "").trim();
+          if (!orderEmail) return apiError("customer email is required for Purchase");
 
-          const { data: order, error } = await db
-            .from("orders")
-            .select("id, order_number, total, status, items, customer_email, customer_phone, customer_name, shipping_address, fbp, fbc, user_id")
-            .eq("order_number", orderNumber)
-            .maybeSingle();
+          const { data, error } = await (db as any).rpc("lookup_order_by_email", {
+            p_order_number: orderNumber,
+            p_customer_email: orderEmail,
+          });
           if (error) return apiError(error.message, 500);
+          const order = Array.isArray(data) ? data[0] : data;
           if (!order) return apiError("Order not found", 404);
           if (["cancelled", "failed", "refunded"].includes(String(order.status))) {
             return json({ ok: true, skipped: "Order is not a valid conversion", status: order.status });
@@ -138,7 +140,10 @@ export const Route = createFileRoute("/api/public/v1/meta/event")({
               );
           }
 
-          await db.from("orders").update({ purchase_event_id: eventId }).eq("id", order.id).is("purchase_event_id", null);
+          await (db as any).rpc("mark_order_purchase_event", {
+            p_order_number: orderNumber,
+            p_customer_email: orderEmail,
+          });
         }
 
         if (!eventId) eventId = `${eventName.toLowerCase()}_${crypto.randomUUID()}`;

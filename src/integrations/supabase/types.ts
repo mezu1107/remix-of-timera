@@ -1424,8 +1424,39 @@ export type Database = {
       }
     }
     Functions: {
+      lookup_order_by_email: {
+        Args: { p_customer_email: string; p_order_number: string }
+        Returns: {
+          courier: string
+          created_at: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          discount: number
+          estimated_delivery: string
+          fbc: string
+          fbp: string
+          id: string
+          items: Json
+          order_number: string
+          shipping: number
+          shipping_address: string
+          status: string
+          status_history: Json
+          subtotal: number
+          total: number
+          tracking_number: string
+          updated_at: string
+          user_id: string
+        }[]
+      }
+      mark_order_purchase_event: {
+        Args: { p_customer_email: string; p_order_number: string }
+        Returns: string
+      }
       slugify: { Args: { _input: string }; Returns: string }
       unaccent_fallback: { Args: { _input: string }; Returns: string }
+      upsert_cart_lead: { Args: { p_lead: Json }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "staff" | "user"

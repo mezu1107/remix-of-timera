@@ -9,17 +9,22 @@ import { supabase } from "@/integrations/supabase/client";
 export type LeadStage = "add_to_cart" | "checkout_started" | "checkout_details" | "purchased";
 
 const STORAGE_KEY = "timera-lead-session";
+const SESSION_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+let memorySessionId: string | null = null;
 
 export function leadSessionId() {
   if (typeof window === "undefined") return "";
+  const createId = () => window.crypto?.randomUUID?.() ?? "";
   try {
     const existing = window.localStorage.getItem(STORAGE_KEY);
-    if (existing) return existing;
-    const id = window.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    if (existing && SESSION_ID_PATTERN.test(existing)) return existing;
+    const id = createId();
+    if (!id) return "";
     window.localStorage.setItem(STORAGE_KEY, id);
     return id;
   } catch {
-    return `anon-${Date.now()}`;
+    memorySessionId ??= createId() || null;
+    return memorySessionId ?? "";
   }
 }
 
@@ -74,13 +79,6 @@ export async function captureLead(input: LeadInput) {
   if (input.city) row.city = input.city;
   if (input.orderNumber) row.order_number = input.orderNumber;
 
-  try {
-    const { data: sessionData } = await supabase.auth.getSession();
-    if (sessionData.session?.user?.id) row.user_id = sessionData.session.user.id;
-  } catch {
-    /* guest checkout */
-  }
-
-  const { error } = await (supabase.from("cart_leads" as any) as any).upsert(row, { onConflict: "session_id" });
+  const { error } = await (supabase as any).rpc("upsert_cart_lead", { p_lead: row });
   if (error) console.warn("Lead was not captured", error.message);
 }

@@ -259,11 +259,14 @@ export const Route = createFileRoute("/api/public/v1/orders/")({
 
         const total = Math.max(0, subtotal - discount + shipping);
         const orderNumber = `TM-${Date.now().toString(36).toUpperCase()}`;
+        const orderId = crypto.randomUUID();
+        const createdAt = new Date().toISOString();
 
         // ── Insert via RLS-allowed client ───────────────────────────
         // RLS policy "orders_insert_anon" grants INSERT to anon + authenticated.
         // No service-role key required.
         const payload: Record<string, unknown> = {
+          id: orderId,
           order_number: orderNumber,
           user_id: user?.id ?? null,
           customer_name: name,
@@ -291,17 +294,11 @@ export const Route = createFileRoute("/api/public/v1/orders/")({
           attribution: body.attribution ?? null,
         };
 
-        const { data: inserted, error: insertError } = await writeClient
-          .from("orders")
-          .insert(payload)
-          .select("id, order_number, total, status, created_at")
-          .maybeSingle();
+        const { error: insertError } = await writeClient.from("orders").insert(payload);
 
         if (insertError) return apiError(insertError.message, 400);
-        if (!inserted)
-          return apiError("Order could not be created. Please try again.", 500);
 
-        const eventId = `purchase_${inserted.id}`;
+        const eventId = `purchase_${orderId}`;
 
         return json(
           {
@@ -309,10 +306,10 @@ export const Route = createFileRoute("/api/public/v1/orders/")({
             currency: "PKR",
             event_id: eventId,
             order: {
-              order_number: inserted.order_number,
-              total: inserted.total,
-              status: inserted.status,
-              created_at: inserted.created_at,
+              order_number: orderNumber,
+              total,
+              status: "pending",
+              created_at: createdAt,
             },
           },
           201,
